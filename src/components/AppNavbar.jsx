@@ -8,9 +8,14 @@ import { MdMarkUnreadChatAlt } from "react-icons/md";
 
 const AppNavbar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [dropdownOpen, setDropdownOpen] = useState(false); // State for dropdown menu
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
+    };
+
+    const toggleDropdown = () => {
+        setDropdownOpen(!dropdownOpen);
     };
 
     return (
@@ -50,7 +55,7 @@ const AppNavbar = () => {
                         <a href="/app/products">Products</a>
                         <span className='block absolute bottom-[-2px] left-0 w-full h-[2px] bg-orange-500 scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300'></span>
                     </li>
-    
+
                     {/* <div className='flex gap-3 ml-2 items-center'>
                         <a href="login" className='hover:text-orange-500'>Sign In</a>
                         <a href="signup" className='bg-orange-500 px-2 py-1 rounded-xl text-white'>Create an Account</a>
@@ -58,13 +63,36 @@ const AppNavbar = () => {
                 </ul>
             </div>
             <div className="flex gap-4 items-center">
-            {/* <a href="signup" className='bg-orange-500 px-2 py-1 rounded-xl text-white'>Access Forum</a> */}
-            <a href="/forum">
-                <MdMarkUnreadChatAlt className="text-orange-500 text-2xl" />
-            </a>
-            <div className="bg-gray-400 h-[40px] w-[40px] rounded-full flex items-center justify-center">
-                <h1 className="text-white">CM</h1>
-            </div>
+                {/* <a href="signup" className='bg-orange-500 px-2 py-1 rounded-xl text-white'>Access Forum</a> */}
+                <a href="/forum">
+                    <MdMarkUnreadChatAlt className="text-orange-500 text-2xl" />
+                </a>
+                <div className="relative">
+                    <div 
+                        className="bg-gray-400 h-[40px] w-[40px] rounded-full flex items-center justify-center cursor-pointer" 
+                        onClick={toggleDropdown}
+                    >
+                        <h1 className="text-white">CM</h1>
+                    </div>
+
+                    {/* Dropdown menu */}
+                    {dropdownOpen && (
+                        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
+                            <ul className="py-2">
+                                <li>
+                                    <a href="/account" className="block px-4 py-2 hover:bg-gray-100">
+                                        Account
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/logout" className="block px-4 py-2 hover:bg-gray-100">
+                                        Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     )
