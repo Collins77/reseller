@@ -1,14 +1,32 @@
 // import React from 'react'
 
-import { useState } from "react";
+import {  useState } from "react";
 import logo from '../assets/ResellerSprint logo.png'
 import { FaTimes } from 'react-icons/fa';
 import { FaBars } from 'react-icons/fa6';
 import { MdMarkUnreadChatAlt } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutReseller } from "@/redux/slices/resellerSlice";
+import { toast } from "sonner";
+// import axios from "axios";
+
+// import { useSelector } from "react-redux";
 
 const AppNavbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false); // State for dropdown menu
+    const dispatch = useDispatch();
+
+    // Fetch reseller details from the Redux store
+    // const reseller = useSelector((state) => state.resellers.reseller);
+    // const token = useSelector((state) => state.resellers.token);// Fetch the token as well
+    const { reseller } = useSelector((state) => state.resellers); // Get the logged-in reseller details
+
+    console.log(reseller)
+    // console.log(token)
+
+
+    
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
@@ -16,6 +34,11 @@ const AppNavbar = () => {
 
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen);
+    };
+    const handleLogout = () => {
+        dispatch(logoutReseller()); // Dispatch the logout action
+        setDropdownOpen(false);
+        toast.success("Logged out successfully") // Close the dropdown
     };
 
     return (
@@ -72,7 +95,9 @@ const AppNavbar = () => {
                         className="bg-gray-400 h-[40px] w-[40px] rounded-full flex items-center justify-center cursor-pointer" 
                         onClick={toggleDropdown}
                     >
-                        <h1 className="text-white">CM</h1>
+                        <h1 className="text-white uppercase">
+                            {reseller ? `${reseller.firstName.charAt(0)}${reseller.lastName.charAt(0)}` : "NN"}
+                        </h1>
                     </div>
 
                     {/* Dropdown menu */}
@@ -85,9 +110,9 @@ const AppNavbar = () => {
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="/logout" className="block px-4 py-2 hover:bg-gray-100">
+                                    <button onClick={handleLogout} className="block px-4 py-2 hover:bg-gray-100">
                                         Logout
-                                    </a>
+                                    </button>
                                 </li>
                             </ul>
                         </div>

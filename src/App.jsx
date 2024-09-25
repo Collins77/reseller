@@ -15,6 +15,12 @@ import ProductsPage from './pages/ProductsPage'
 import SingleSupplierPage from './pages/SingleSupplierPage'
 import ProfilePage from './pages/ProfilePage'
 import EditPassword from './pages/Auth/EditPassword'
+import ProtectedRoute from './components/auth/ProtectedRoute'
+import Dashboard from './pages/Supplier/Dashboard'
+import Products from './pages/Supplier/Products'
+import Ads from './pages/Supplier/Ads'
+
+
 
 function App() {
 
@@ -30,12 +36,31 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/supplier-signup" element={<SuppSignup />} />
         <Route path="/supplier-login" element={<SuppLogin />} />
-        <Route path="/app" element={<MainApp />} />
-        <Route path="/app/suppliers" element={<SuppliersPage />} />
-        <Route path="/app/products" element={<ProductsPage />} />
-        <Route path="/app/suppliers/view" element={<SingleSupplierPage />} />
-        <Route path="/app/account" element={<ProfilePage />} />
-        <Route path="/app/account/edit-password" element={<EditPassword />} />
+
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/app" element={<MainApp />} />
+          <Route path="/app/suppliers" element={
+            <SuppliersPage />
+          } />
+          <Route path="/app/products" element={
+            <ProductsPage />
+          } />
+          <Route path="/app/suppliers/view" element={
+            <SingleSupplierPage />
+          } />
+          <Route path="/app/account" element={
+            <ProfilePage />
+          } />
+          <Route path="/app/account/edit-password" element={
+            <EditPassword />
+          } />
+        </Route>
+        <Route path='/supplier' element={<Dashboard />} />
+        <Route path='/supplier/products' element={<Products />} />
+        <Route path='/supplier/add-product' element={<Dashboard />} />
+        <Route path='/supplier/ads' element={<Ads />} />
+        <Route path='/supplier/create-add' element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
   )

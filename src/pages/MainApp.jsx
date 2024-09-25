@@ -7,8 +7,28 @@ import { IoLocation, IoLogoGooglePlaystore } from "react-icons/io5";
 import logo from "../assets/ResellerSprint icon.png"
 import Footer from "@/components/Footer";
 import { GrAppleAppStore } from "react-icons/gr";
+import { useEffect, useState } from "react";
+import { server } from "@/server";
 
 const MainApp = () => {
+    const [suppliers, setSuppliers] = useState([]);
+
+    // Fetch suppliers
+    useEffect(() => {
+        const fetchSuppliers = async () => {
+            try {
+                const response = await fetch(`${server}/suppliers/get-suppliers`);
+                // console.log(response.json())
+                const data = await response.json();
+                console.log(data);
+                setSuppliers(data.suppliers); // Assuming the API returns an array of suppliers
+            } catch (error) {
+                console.error('Error fetching suppliers:', error);
+            }
+        };
+
+        fetchSuppliers();
+    }, []);
     return (
         <div>
             <AppNavbar />
@@ -68,7 +88,7 @@ const MainApp = () => {
                     </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                    <a href="" className="border p-5 rounded-sm">
+                    {/* <a href="" className="border p-5 rounded-sm">
                         <div className="flex items-center gap-2">
                             <div className="w-[80px] h-[80px] bg-gray-300 rounded-full flex items-center justify-center">
                                 <img src={logo} alt="" className="h-[60px] w-[60px]" />
@@ -103,115 +123,45 @@ const MainApp = () => {
                                 <p>Type</p>
                             </div>
                         </div>
-                    </a>
-                    <a href="" className="border p-5 rounded-sm">
-                        <div className="flex items-center gap-2">
-                            <div className="w-[80px] h-[80px] bg-gray-300 rounded-full flex items-center justify-center">
-                                <img src={logo} alt="" className="h-[60px] w-[60px]" />
-                            </div>
-                            <div>
-                                <h1 className="text-2xl font-bold mb-1">Cotek Technologies</h1>
-                                <div className=" flex gap-1 items-center mb-2 text-gray-500">
-                                    <IoLocation color="orange" />
-                                    172, Boulevard St. Kenya
+                    </a> */}
+                    {suppliers.slice(0, 4).map((supplier) => (
+                        <a key={supplier.id} href={`/app/suppliers/${supplier.id}`} className="border p-5 rounded-sm">
+                            <div className="flex items-center gap-2">
+                                <div className="w-[80px] h-[80px] bg-gray-300 rounded-full flex items-center justify-center">
+                                    <img src={logo} alt={supplier.name} className="h-[60px] w-[60px]" />
                                 </div>
-                                <div className=" flex gap-1 items-center mb-2 text-gray-500">
-                                    <FaPhone color="green" />
-                                    +254791448827
-                                </div>
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-4 gap-2">
-                            <div className="flex flex-col items-center justify-center border-r">
-                                <h1>10</h1>
-                                <p>Products</p>
-                            </div>
-                            <div className="flex flex-col items-center justify-center border-r">
-                                <h1>1</h1>
-                                <p>Ads</p>
-                            </div>
-                            <div className="flex flex-col items-center justify-center border-r">
-                                <h1>140</h1>
-                                <p>Dollar Rate</p>
-                            </div>
-                            <div className="flex flex-col items-center justify-center border-r">
-                                <h1>supplier</h1>
-                                <p>Type</p>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="" className="border p-5 rounded-sm">
-                        <div className="flex items-center gap-2">
-                            <div className="w-[80px] h-[80px] bg-gray-300 rounded-full flex items-center justify-center">
-                                <img src={logo} alt="" className="h-[60px] w-[60px]" />
-                            </div>
-                            <div>
-                                <h1 className="text-2xl font-bold mb-1">Cotek Technologies</h1>
-                                <div className=" flex gap-1 items-center mb-2 text-gray-500">
-                                    <IoLocation color="orange" />
-                                    172, Boulevard St. Kenya
-                                </div>
-                                <div className=" flex gap-1 items-center mb-2 text-gray-500">
-                                    <FaPhone color="green" />
-                                    +254791448827
+                                <div>
+                                    <h1 className="text-2xl font-bold mb-1">{supplier.companyName}</h1>
+                                    <div className="flex gap-1 items-center mb-2 text-gray-500">
+                                        <IoLocation color="orange" />
+                                        {supplier.address}
+                                    </div>
+                                    <div className="flex gap-1 items-center mb-2 text-gray-500">
+                                        <FaPhone color="green" />
+                                        {supplier.phoneNumber}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="grid grid-cols-4 gap-2">
-                            <div className="flex flex-col items-center justify-center border-r">
-                                <h1>10</h1>
-                                <p>Products</p>
-                            </div>
-                            <div className="flex flex-col items-center justify-center border-r">
-                                <h1>1</h1>
-                                <p>Ads</p>
-                            </div>
-                            <div className="flex flex-col items-center justify-center border-r">
-                                <h1>140</h1>
-                                <p>Dollar Rate</p>
-                            </div>
-                            <div className="flex flex-col items-center justify-center border-r">
-                                <h1>supplier</h1>
-                                <p>Type</p>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="" className="border p-5 rounded-sm">
-                        <div className="flex items-center gap-2">
-                            <div className="w-[80px] h-[80px] bg-gray-300 rounded-full flex items-center justify-center">
-                                <img src={logo} alt="" className="h-[60px] w-[60px]" />
-                            </div>
-                            <div>
-                                <h1 className="text-2xl font-bold mb-1">Cotek Technologies</h1>
-                                <div className=" flex gap-1 items-center mb-2 text-gray-500">
-                                    <IoLocation color="orange" />
-                                    172, Boulevard St. Kenya
+                            <div className="grid grid-cols-4 gap-2">
+                                <div className="flex flex-col items-center justify-center border-r">
+                                    {/* <h1>{supplier.productsCount}</h1> */}
+                                    <p>Products</p>
                                 </div>
-                                <div className=" flex gap-1 items-center mb-2 text-gray-500">
-                                    <FaPhone color="green" />
-                                    +254791448827
+                                <div className="flex flex-col items-center justify-center border-r">
+                                    {/* <h1>{supplier.adsCount}</h1> */}
+                                    <p>Ads</p>
+                                </div>
+                                <div className="flex flex-col items-center justify-center border-r">
+                                    <h1>{supplier.dollarExchangeRate}</h1>
+                                    <p>Dollar Rate</p>
+                                </div>
+                                <div className="flex flex-col items-center justify-center border-r">
+                                    <h1>{supplier.type}</h1>
+                                    <p>Type</p>
                                 </div>
                             </div>
-                        </div>
-                        <div className="grid grid-cols-4 gap-2">
-                            <div className="flex flex-col items-center justify-center border-r">
-                                <h1>10</h1>
-                                <p>Products</p>
-                            </div>
-                            <div className="flex flex-col items-center justify-center border-r">
-                                <h1>1</h1>
-                                <p>Ads</p>
-                            </div>
-                            <div className="flex flex-col items-center justify-center border-r">
-                                <h1>140</h1>
-                                <p>Dollar Rate</p>
-                            </div>
-                            <div className="flex flex-col items-center justify-center border-r">
-                                <h1>supplier</h1>
-                                <p>Type</p>
-                            </div>
-                        </div>
-                    </a>
+                        </a>
+                    ))}
                 </div>
             </div>
             <div className="bg-orange-400 h-[200px] py-[20px]">
