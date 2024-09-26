@@ -19,6 +19,11 @@ import ProtectedRoute from './components/auth/ProtectedRoute'
 import Dashboard from './pages/Supplier/Dashboard'
 import Products from './pages/Supplier/Products'
 import Ads from './pages/Supplier/Ads'
+import AddProduct from './pages/Supplier/AddProduct'
+import AddAd from './pages/Supplier/AddAd'
+import BulkUpload from './pages/Supplier/BulkUpload'
+import Account from './pages/Supplier/Account'
+import EditAccount from './pages/Supplier/EditAccount'
 
 
 
@@ -58,9 +63,12 @@ function App() {
         </Route>
         <Route path='/supplier' element={<Dashboard />} />
         <Route path='/supplier/products' element={<Products />} />
-        <Route path='/supplier/add-product' element={<Dashboard />} />
+        <Route path='/supplier/add-product' element={<AddProduct />} />
         <Route path='/supplier/ads' element={<Ads />} />
-        <Route path='/supplier/create-add' element={<Dashboard />} />
+        <Route path='/supplier/create-ad' element={<AddAd />} />
+        <Route path='/supplier/bulk-upload' element={<BulkUpload />} />
+        <Route path='/supplier/account' element={<Account />} />
+        <Route path='/supplier/account/edit' element={<EditAccount />} />
       </Routes>
     </BrowserRouter>
   )

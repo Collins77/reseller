@@ -56,6 +56,10 @@ const Ads = () => {
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem>
+                                    <BreadcrumbLink href="/supplier/ads">Ads</BreadcrumbLink>
+                                </BreadcrumbItem>
+                                <BreadcrumbSeparator />
+                                <BreadcrumbItem>
                                     <BreadcrumbPage>Ads</BreadcrumbPage>
                                 </BreadcrumbItem>
                             </BreadcrumbList>
@@ -64,7 +68,7 @@ const Ads = () => {
                 </div>
                 <div className="bg-white shadow-md p-4">
                     <div className="flex justify-between items-center mb-7">
-                        <h1 className="text-xl font-bold">All Products</h1>
+                        <h1 className="text-xl font-bold">All Ads</h1>
                         <div>
                             {/* Search Input */}
                             <input
@@ -76,7 +80,7 @@ const Ads = () => {
                             />
                         </div>
                         <div>
-                            <a href="/supplier/add-product" className="bg-orange-500 px-2 py-1 text-white rounded-md hover:bg-orange-800">Add Product</a>
+                            <a href="/supplier/add-ad" className="bg-orange-500 px-2 py-1 text-white rounded-md hover:bg-orange-800">Create Ad</a>
                         </div>
                     </div>
                     <div>
