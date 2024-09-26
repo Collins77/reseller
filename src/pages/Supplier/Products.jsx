@@ -17,15 +17,21 @@ const Products = () => {
         { sku: 'diudhwuehd32', name: 'Xiaomi Mi 11', price: 749, brand: 'Xiaomi', warranty: 24, status: 'Available' },
         // Add more products as needed
     ];
-    const itemsPerPage = 5; // Number of products to display per page
+    const [searchQuery, setSearchQuery] = useState("");
+    const itemsPerPage = 4; // Number of products to display per page
     const [currentPage, setCurrentPage] = useState(1);
 
+    // Filter products based on search query
+    const filteredProducts = products.filter((product) =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     // Calculate the total number of pages
-    const totalPages = Math.ceil(products.length / itemsPerPage);
+    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
     // Get the current items to display based on the current page
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const currentProducts = products.slice(startIndex, startIndex + itemsPerPage);
+    const currentProducts = filteredProducts.slice(startIndex, startIndex + itemsPerPage);
 
     const handleNextPage = () => {
         if (currentPage < totalPages) {
@@ -57,8 +63,21 @@ const Products = () => {
                     </div>
                 </div>
                 <div className="bg-white shadow-md p-4">
-                    <div className="">
+                <div className="flex justify-between items-center mb-7">
                         <h1 className="text-xl font-bold">All Products</h1>
+                        <div>
+                            {/* Search Input */}
+                            <input
+                                type="text"
+                                placeholder="Search products..."
+                                className="border border-gray-300 rounded-md px-4 py-2"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <a href="/supplier/add-product" className="bg-orange-500 px-2 py-1 text-white rounded-md hover:bg-orange-800">Create Ad</a>
+                        </div>
                     </div>
                     <div>
                     <table className="bg-white w-full overflow-scroll">

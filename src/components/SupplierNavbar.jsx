@@ -40,7 +40,7 @@ const SupplierNavbar = ({isOpen, toggleSidebar}) => {
                         <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
                             <ul className="py-2">
                                 <li>
-                                    <a href="/account" className="block px-4 py-2 hover:bg-gray-100">
+                                    <a href="/supplier/account" className="block px-4 py-2 hover:bg-gray-100">
                                         Account
                                     </a>
                                 </li>

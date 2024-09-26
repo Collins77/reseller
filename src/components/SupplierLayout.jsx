@@ -15,7 +15,7 @@ const SupplierLayout = ({ children }) => {
       <Sidebar isOpen={isSidebarOpen} />
 
       {/* Main Content */}
-      <div className={`flex flex-col flex-grow transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-0'}`}>
+      <div className={`flex flex-col flex-grow transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-16'}`}>
         <Navbar toggleSidebar={toggleSidebar} isOpen={isSidebarOpen} />
         
         <main className="flex-grow p-4 bg-gray-100">

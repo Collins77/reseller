@@ -24,6 +24,7 @@ import AddAd from './pages/Supplier/AddAd'
 import BulkUpload from './pages/Supplier/BulkUpload'
 import Account from './pages/Supplier/Account'
 import EditAccount from './pages/Supplier/EditAccount'
+import EditPasswordSupp from './pages/Supplier/EditPasswordSupp'
 
 
 
@@ -69,6 +70,7 @@ function App() {
         <Route path='/supplier/bulk-upload' element={<BulkUpload />} />
         <Route path='/supplier/account' element={<Account />} />
         <Route path='/supplier/account/edit' element={<EditAccount />} />
+        <Route path='/supplier/account/edit/password' element={<EditPasswordSupp />} />
       </Routes>
     </BrowserRouter>
   )

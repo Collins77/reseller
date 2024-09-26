@@ -80,7 +80,7 @@ const Ads = () => {
                             />
                         </div>
                         <div>
-                            <a href="/supplier/add-ad" className="bg-orange-500 px-2 py-1 text-white rounded-md hover:bg-orange-800">Create Ad</a>
+                            <a href="/supplier/create-ad" className="bg-orange-500 px-2 py-1 text-white rounded-md hover:bg-orange-800">Create Ad</a>
                         </div>
                     </div>
                     <div>
