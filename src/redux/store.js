@@ -1,10 +1,8 @@
-import { configureStore } from '@reduxjs/toolkit';
-import resellerReducer from './slices/resellerSlice';
+import { create } from "zustand";
+import { createAuthSlice } from "./slices/authSlice";
+// import { createChatSlice } from "./slices/chatSlice";
 
-const store = configureStore({
-    reducer: {
-        resellers: resellerReducer,
-    }
-});
-
-export default store;
+export const useAppStore = create()((...a) => ({
+    ...createAuthSlice(...a),
+    // ...createChatSlice(...a),
+}))

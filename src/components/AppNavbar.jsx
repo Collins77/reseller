@@ -1,13 +1,15 @@
 // import React from 'react'
 
-import {  useState } from "react";
+import { useEffect, useState } from "react";
 import logo from '../assets/ResellerSprint logo.png'
 import { FaTimes } from 'react-icons/fa';
 import { FaBars } from 'react-icons/fa6';
 import { MdMarkUnreadChatAlt } from "react-icons/md";
-import { useDispatch, useSelector } from "react-redux";
-import { logoutReseller } from "@/redux/slices/resellerSlice";
 import { toast } from "sonner";
+import { useAppStore } from "@/redux/store";
+import apiClient from "@/lib/api-client";
+import { LOGOUT_ROUTE } from "@/lib/constants";
+import { useNavigate } from "react-router-dom";
 // import axios from "axios";
 
 // import { useSelector } from "react-redux";
@@ -15,18 +17,19 @@ import { toast } from "sonner";
 const AppNavbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false); // State for dropdown menu
-    const dispatch = useDispatch();
+    const { resellerInfo, setResellerInfo } = useAppStore()
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const navigate = useNavigate()
 
-    // Fetch reseller details from the Redux store
-    // const reseller = useSelector((state) => state.resellers.reseller);
-    // const token = useSelector((state) => state.resellers.token);// Fetch the token as well
-    const { reseller } = useSelector((state) => state.resellers); // Get the logged-in reseller details
-
-    console.log(reseller)
-    // console.log(token)
-
-
+    useEffect(() => {
+        if(resellerInfo) {
+          setFirstName(resellerInfo.firstName);
+          setLastName(resellerInfo.lastName);
+        }
+      }, [resellerInfo]);
     
+
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
@@ -35,11 +38,20 @@ const AppNavbar = () => {
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen);
     };
-    const handleLogout = () => {
-        dispatch(logoutReseller()); // Dispatch the logout action
-        setDropdownOpen(false);
-        toast.success("Logged out successfully") // Close the dropdown
-    };
+
+    const logOut = async () => {
+        try {
+            const response = await apiClient.post(LOGOUT_ROUTE, {}, { withCredentials: true });
+            if (response.status === 200) {
+                toast("Logout successful")
+                setDropdownOpen(false);
+                navigate("/login");
+                setResellerInfo(null);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     return (
         <div className="w-full sticky z-40 top-0 bg-white h-[70px] flex justify-between border-b-2 items-center px-[40px] py-[20px]">
@@ -91,12 +103,14 @@ const AppNavbar = () => {
                     <MdMarkUnreadChatAlt className="text-orange-500 text-2xl" />
                 </a>
                 <div className="relative">
-                    <div 
-                        className="bg-gray-400 h-[40px] w-[40px] rounded-full flex items-center justify-center cursor-pointer" 
+                    <div
+                        className="bg-gray-400 h-[40px] w-[40px] rounded-full flex items-center justify-center cursor-pointer"
                         onClick={toggleDropdown}
                     >
                         <h1 className="text-white uppercase">
-                            {reseller ? `${reseller.firstName.charAt(0)}${reseller.lastName.charAt(0)}` : "NN"}
+                            {firstName?.charAt(0) && lastName?.charAt(0)
+                                ? `${firstName.charAt(0)}${lastName.charAt(0)}`
+                                : "NN"}
                         </h1>
                     </div>
 
@@ -105,12 +119,12 @@ const AppNavbar = () => {
                         <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
                             <ul className="py-2">
                                 <li>
-                                    <a href="/account" className="block px-4 py-2 hover:bg-gray-100">
+                                    <a href="/app/account" className="block px-4 py-2 hover:bg-gray-100">
                                         Account
                                     </a>
                                 </li>
                                 <li>
-                                    <button onClick={handleLogout} className="block px-4 py-2 hover:bg-gray-100">
+                                    <button onClick={logOut} className="block px-4 py-2 hover:bg-gray-100">
                                         Logout
                                     </button>
                                 </li>
