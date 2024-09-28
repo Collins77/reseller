@@ -15,30 +15,34 @@ import { FaPhone } from "react-icons/fa6";
 import Footer from "@/components/Footer";
 import { GrAppleAppStore } from "react-icons/gr";
 import apiClient from "@/lib/api-client";
-import { GET_ALL_CATEGORIES_ROUTE, GET_ALL_SUPPLIER_ROUTES } from "@/lib/constants";
+import { GET_ALL_ADS_BY_SUPPLIER_ROUTE, GET_ALL_CATEGORIES_ROUTE, GET_ALL_PRODUCTS_BY_SUPPLIER_ROUTE, GET_ALL_SUPPLIER_ROUTES } from "@/lib/constants";
 
 const SuppliersPage = () => {
-  // State to hold suppliers, categories, search, and filters
   const [suppliers, setSuppliers] = useState([]);
   const [categories, setCategories] = useState([]);
   const [filteredSuppliers, setFilteredSuppliers] = useState([]);
+  const [productsBySupplier, setProductsBySupplier] = useState({});
+  const [adsBySupplier, setAdsBySupplier] = useState({});
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
 
-  // Fetch suppliers and categories
   useEffect(() => {
     const fetchSuppliers = async () => {
-      const res = await apiClient.get(GET_ALL_SUPPLIER_ROUTES, {}, { withCredentials: true }); // Replace with your API
-      const data = await res.data.suppliers;
-      console.log(data);
+      const res = await apiClient.get(GET_ALL_SUPPLIER_ROUTES, {}, { withCredentials: true });
+      const data = res.data.suppliers;
       setSuppliers(data);
       setFilteredSuppliers(data); // Initially, display all suppliers
+      // Fetch products and ads for each supplier
+      data.forEach((supplier) => {
+        fetchSupplierProducts(supplier._id);
+        fetchSupplierAds(supplier._id);
+      });
     };
 
     const fetchCategories = async () => {
-      const res = await apiClient.get(GET_ALL_CATEGORIES_ROUTE, {}, { withCredentials: true });; // Replace with your API
-      const data = await res.data;
+      const res = await apiClient.get(GET_ALL_CATEGORIES_ROUTE, {}, { withCredentials: true });
+      const data = res.data;
       setCategories(data);
     };
 
@@ -46,31 +50,56 @@ const SuppliersPage = () => {
     fetchCategories();
   }, []);
 
+  // Fetch products by supplier ID
+  const fetchSupplierProducts = async (supplierId) => {
+    try {
+      const res = await apiClient.get(`${GET_ALL_PRODUCTS_BY_SUPPLIER_ROUTE}/${supplierId}`);
+      const data = res.data.products;
+      setProductsBySupplier((prev) => ({
+        ...prev,
+        [supplierId]: data, // Map supplier ID to their products
+      }));
+    } catch (error) {
+      console.error("Error fetching products", error);
+    }
+  };
+
+  // Fetch ads by supplier ID
+  const fetchSupplierAds = async (supplierId) => {
+    try {
+      const res = await apiClient.get(`${GET_ALL_ADS_BY_SUPPLIER_ROUTE}/${supplierId}`);
+      const data = res.data.ads;
+      setAdsBySupplier((prev) => ({
+        ...prev,
+        [supplierId]: data, // Map supplier ID to their ads
+      }));
+    } catch (error) {
+      console.error("Error fetching ads", error);
+    }
+  };
+
   // Filter suppliers based on search, type, and category
   useEffect(() => {
     let updatedSuppliers = suppliers;
 
-    // Filter by search
     if (search) {
       updatedSuppliers = updatedSuppliers.filter((supplier) =>
         supplier.companyName.toLowerCase().includes(search.toLowerCase())
       );
     }
 
-    // Filter by type
     if (typeFilter) {
       updatedSuppliers = updatedSuppliers.filter(
         (supplier) => supplier.companyType === typeFilter
       );
     }
 
-    // Filter by category
     if (categoryFilter) {
-        updatedSuppliers = updatedSuppliers.filter(
-          (supplier) =>
-            supplier.categories && supplier.categories.includes(categoryFilter)
-        );
-      }
+      updatedSuppliers = updatedSuppliers.filter(
+        (supplier) =>
+          supplier.categories && supplier.categories.includes(categoryFilter)
+      );
+    }
 
     setFilteredSuppliers(updatedSuppliers);
   }, [search, typeFilter, categoryFilter, suppliers]);
@@ -156,7 +185,7 @@ const SuppliersPage = () => {
       {/* Supplier List */}
       <div className="grid grid-cols-2 gap-3 px-[40px] mb-5">
         {filteredSuppliers.map((supplier) => (
-          <a href={`/suppliers/${supplier.id}`} key={supplier.id} className="border p-5 rounded-sm">
+          <a href={`/suppliers/${supplier._id}`} key={supplier.id} className="border p-5 rounded-sm">
             <div className="flex items-center gap-2">
               <div className="w-[80px] h-[80px] bg-gray-300 rounded-full flex items-center justify-center">
                 <img src={logo} alt="" className="h-[60px] w-[60px]" />
@@ -175,19 +204,19 @@ const SuppliersPage = () => {
             </div>
             <div className="grid grid-cols-4 gap-2">
               <div className="flex flex-col items-center justify-center border-r">
-                <h1>{supplier.productsCount}</h1>
+              <h1 className="font-bold">{productsBySupplier[supplier._id]?.length || 0}</h1>
                 <p>Products</p>
               </div>
               <div className="flex flex-col items-center justify-center border-r">
-                <h1>{supplier.adsCount}</h1>
+              <h1 className="font-bold">{adsBySupplier[supplier._id]?.length || 0}</h1>
                 <p>Ads</p>
               </div>
               <div className="flex flex-col items-center justify-center border-r">
-                <h1>{supplier.dollarExchangeRate}</h1>
+                <h1 className="font-bold">{supplier.dollarExchangeRate}</h1>
                 <p>Dollar Rate</p>
               </div>
               <div className="flex flex-col items-center justify-center border-r">
-                <h1>{supplier.companyType}</h1>
+                <h1 className="font-bold">{supplier.companyType}</h1>
                 <p>Type</p>
               </div>
             </div>

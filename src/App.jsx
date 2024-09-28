@@ -111,7 +111,7 @@ function App() {
               <ProductsPage />
             </PrivateRoute>
           } />
-          <Route path="/app/suppliers/view" element={
+          <Route path="/app/suppliers/view/:id" element={
             <PrivateRoute>
               <SingleSupplierPage />
             </PrivateRoute>
