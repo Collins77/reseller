@@ -46,6 +46,8 @@ const SuppliersPage = () => {
       setCategories(data);
     };
 
+    
+
     fetchSuppliers();
     fetchCategories();
   }, []);

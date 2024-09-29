@@ -55,13 +55,6 @@ const ProductsPage = () => {
         return supplier ? supplier.companyName : 'Unknown Supplier';
     };
 
-    // const filteredProducts = products.filter(product => {
-    //     return (
-    //         (!categoryFilter || product.category === categoryFilter) &&
-    //         (!brandFilter || product.brand === brandFilter) &&
-    //         (!supplierFilter || product.supplier === supplierFilter)
-    //     );
-    // });
     const filters = {
         category: categoryFilter, // Assumes categoryFilter is defined
         brand: brandFilter,        // Assumes brandFilter is defined
@@ -104,25 +97,6 @@ const ProductsPage = () => {
     const truncateText = (text, length = 30) => {
         return text.length > length ? `${text.substring(0, length)}...` : text;
     };
-
-    // const exportCSV = () => {
-    //     json2csv(filteredProducts, (err, csv) => {
-    //         if (err) {
-    //             console.error(err);
-    //             return;
-    //         }
-
-    //         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    //         saveAs(blob, 'products.csv');
-    //     });
-    // };
-    // import { saveAs } from 'file-saver';
-    useEffect(() => {
-        console.log("Selected Category Filter:", categoryFilter);
-        console.log("Selected Brand Filter:", brandFilter);
-        console.log("Selected Supplier Filter:", supplierFilter);
-        console.log("Products Data:", products);
-    }, [categoryFilter, brandFilter, supplierFilter, products]);
 
     const exportCSV = () => {
         try {

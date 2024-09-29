@@ -10,9 +10,128 @@ import { MdEmail } from "react-icons/md";
 import { MdOutlineAdsClick } from "react-icons/md";
 import Footer from "@/components/Footer";
 import { GrAppleAppStore } from "react-icons/gr";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import apiClient from "@/lib/api-client";
+import { GET_ALL_ADS_BY_SUPPLIER_ROUTE, GET_ALL_BRANDS_ROUTE, GET_ALL_CATEGORIES_ROUTE, GET_ALL_PRODUCTS_BY_SUPPLIER_ROUTE, GET_SUPPLIER_DETAILS } from "@/lib/constants";
 
 
 const SingleSupplierPage = () => {
+    const { id } = useParams();
+    const [supplier, setSupplier] = useState(null); // State to hold supplier data
+    const [loading, setLoading] = useState(true); // State to handle loading state
+    const [error, setError] = useState(null); // State to handle errors
+    const [productsBySupplier, setProductsBySupplier] = useState({});
+    const [adsBySupplier, setAdsBySupplier] = useState({});
+    const [categories, setCategories] = useState([]);
+    const [brands, setBrands] = useState([]);
+    const [categoryFilter, setCategoryFilter] = useState('');
+    const [brandFilter, setBrandFilter] = useState('');
+    const [currency, setCurrency] = useState('$');
+
+    const handleCurrencyChange = (e) => {
+        setCurrency(e.target.value);
+    };
+
+    const convertPrice = (price) => {
+        if (currency === '$') {
+            return price; // Return price in dollars
+        } else if (currency === 'KES') {
+            return (price * supplier.dollarExchangeRate).toFixed(2); // Convert to KES
+        }
+        return price; // Fallback
+    };
+
+    useEffect(() => {
+        const fetchSupplierDetails = async () => {
+            try {
+                const response = await apiClient.get(`${GET_SUPPLIER_DETAILS}/${id}`);
+                setSupplier(response.data.supplier); // Set the supplier details in state
+                await Promise.all([
+                    fetchSupplierProducts(response.data.supplier._id),
+                    fetchSupplierAds(response.data.supplier._id),
+                ]);
+                setLoading(false); // Set loading to false
+            } catch (err) {
+                console.error(err);
+                setError('Failed to fetch supplier details'); // Handle error
+                setLoading(false); // Set loading to false
+            }
+        };
+
+        const fetchCategories = async () => {
+            const res = await apiClient.get(GET_ALL_CATEGORIES_ROUTE, {}, { withCredentials: true });
+            setCategories(res.data);
+        };
+
+        const fetchBrands = async () => {
+            const res = await apiClient.get(GET_ALL_BRANDS_ROUTE, {}, { withCredentials: true });
+            setBrands(res.data);
+        };
+
+        fetchBrands();
+        fetchCategories();
+        fetchSupplierDetails(); // Call the function to fetch data
+    }, [id]);
+
+    const fetchSupplierProducts = async (supplierId) => {
+        try {
+            const res = await apiClient.get(`${GET_ALL_PRODUCTS_BY_SUPPLIER_ROUTE}/${supplierId}`);
+            const data = res.data.products;
+            setProductsBySupplier((prev) => ({
+                ...prev,
+                [supplierId]: data, // Map supplier ID to their products
+            }));
+        } catch (error) {
+            console.error("Error fetching products", error);
+        }
+    };
+
+    const fetchSupplierAds = async (supplierId) => {
+        try {
+            const res = await apiClient.get(`${GET_ALL_ADS_BY_SUPPLIER_ROUTE}/${supplierId}`);
+            const data = res.data.ads;
+            setAdsBySupplier((prev) => ({
+                ...prev,
+                [supplierId]: data, // Map supplier ID to their ads
+            }));
+        } catch (error) {
+            console.error("Error fetching ads", error);
+        }
+    };
+
+    const filters = {
+        category: categoryFilter, // Assumes categoryFilter is defined
+        brand: brandFilter,        // Assumes brandFilter is defined
+    };
+
+    const filteredProducts = productsBySupplier[id]?.filter(product => {
+        // Check if the product matches the filters
+        return Object.keys(filters).every(key => {
+            const filterValue = filters[key];
+
+            // Check if the filter is not set, in which case we want to include the product
+            if (!filterValue) return true;
+
+            // Apply the appropriate filter based on the key
+            switch (key) {
+                case 'category':
+                    return product.category === filterValue; // Check category name
+                case 'brand':
+                    return product.brand === filterValue;     // Check brand name
+                default:
+                    return true; // Fallback to include the product
+            }
+        });
+    });
+
+    if (loading) return <div className="spinner">Loading...</div>; // Show loading spinner
+    if (error) return <div className="error-message">{error}</div>;
+
+    const truncateText = (text, length = 30) => {
+        return text.length > length ? `${text.substring(0, length)}...` : text;
+    };
+
     return (
         <div>
             <AppNavbar />
@@ -53,32 +172,32 @@ const SingleSupplierPage = () => {
                         </div>
                         <div>
                             <p className="text-sm text-gray-400">Since 2023</p>
-                            <h1 className="font-semibold ">Cotek Technologies</h1>
-                            <p className="text-gray-400">info@cotektechnologies.com</p>
+                            <h1 className="font-semibold ">{supplier.companyName}</h1>
+                            <p className="text-gray-400">{supplier.companyEmail}</p>
                         </div>
                     </div>
                     <div className="grid grid-cols-3 gap-2 py-2 pb-2 border-b border-dashed mb-3">
                         <div className="flex flex-col items-center">
-                            <h1 className="text-gray-400">10</h1>
+                            <h1 className="text-gray-400">{productsBySupplier[supplier._id]?.length || 0}</h1>
                             <p>Products</p>
                         </div>
                         <div className="flex flex-col items-center">
-                            <h1 className="text-gray-400">145</h1>
+                            <h1 className="text-gray-400">{supplier.dollarExchangeRate}</h1>
                             <p>Exchange Rate</p>
                         </div>
                         <div className="flex flex-col items-center">
-                            <h1 className="text-gray-400">1</h1>
+                            <h1 className="text-gray-400">{adsBySupplier[supplier._id]?.length || 0}</h1>
                             <p>Ads & Events</p>
                         </div>
                     </div>
                     <div className="mb-4">
                         <div className="flex items-center gap-2 mb-2">
                             <IoLocation />
-                            <p>172, Boulevard St. Kenya</p>
+                            <p>{supplier.address}</p>
                         </div>
                         <div className="flex items-center gap-2 mb-2">
                             <FaPhone />
-                            <p>+254791448827</p>
+                            <p>{supplier.phoneNumber}</p>
                         </div>
                     </div>
                     <div className="flex items-center justify-center gap-4">
@@ -96,16 +215,24 @@ const SingleSupplierPage = () => {
                     <div className="px-[10px] grid grid-cols-2 gap-3 mb-8">
                         <div className="flex flex-col gap-2">
                             <label htmlFor="">Filter by category</label>
-                            <select name="" id="" className="border rounded-md p-3">
-                                <option value="">Supplier</option>
-                                <option value="">Manufacturer</option>
+                            <select className="border rounded-md p-3" onChange={(e) => setCategoryFilter(e.target.value)}>
+                                <option value="">All Categories</option>
+                                {categories.map(category => (
+                                    <option key={category._id} value={category.name}>
+                                        {category.name}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                         <div className="flex flex-col gap-2">
                             <label htmlFor="">Filter by brand</label>
-                            <select name="" id="" className="border rounded-md p-3">
-                                <option value="">Computers</option>
-                                <option value="">Mobile Phones</option>
+                            <select className="border rounded-md p-3" onChange={(e) => setBrandFilter(e.target.value)}>
+                                <option value="">All Brands</option>
+                                {brands.map(brand => (
+                                    <option key={brand._id} value={brand.name}>
+                                        {brand.name}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>
@@ -114,9 +241,9 @@ const SingleSupplierPage = () => {
                             <div className="px-[20px] h-[50px] py-[10px] w-full ic flex justify-between">
                                 <div className="flex items-center gap-2">
                                     <label htmlFor="">Currency</label>
-                                    <select name="" id="" className="outline-none rounded-md border">
-                                        <option value="">$</option>
-                                        <option value="">KES</option>
+                                    <select name="" id="" className="outline-none rounded-md border" onChange={handleCurrencyChange}>
+                                        <option value="$">$</option>
+                                        <option value="KES">KES</option>
                                     </select>
                                 </div>
                                 <button className="bg-blue-600 text-white px-2 flex gap-1 items-center py-1 rounded-sm">
@@ -125,105 +252,41 @@ const SingleSupplierPage = () => {
                                 </button>
                             </div>
                             <table className="bg-white w-full h-[300px] overflow-scroll">
-
-                                <tr className="border-b border-gray-500">
-                                    <th className="py-2 px-4">SKU</th>
-                                    <th className="py-2 mx-auto">NAME</th>
-                                    <th className="py-2 px-4">PRICE</th>
-                                    <th className="py-2 px-4">BRAND</th>
-                                    <th className="py-2 px-4">WARRANTY(MONS)</th>
-                                    <th className="py-2 px-4">STATUS</th>
-                                    <th className="py-2 px-4">ACTION</th>
-                                </tr>
-                                <tr className="border-b border-gray-500">
-                                    <td className="py-6 px-4 flex items-center">diudhwuehd28</td>
-                                    <td className="w-[500px]">
-                                        <h1 className="font-semibold">Samsung A71 4GB 128GB</h1>
-                                        <p className="text-gray-400">Mobile Phones</p>
-                                    </td>
-                                    <td className="px-4">
-                                        $76
-                                    </td>
-                                    <td className="px-4">
-                                        Samsung
-                                    </td>
-                                    <td className="px-4 text-center">
-                                        18
-                                    </td>
-                                    <td className="px-4">
-                                        Available
-                                    </td>
-                                    <td className="px-4">
-                                        <FaEye />
-                                    </td>
-                                </tr>
-                                <tr className="border-b border-gray-500">
-                                    <td className="py-6 px-4 flex items-center">diudhwuehd28</td>
-                                    <td className="w-[500px]">
-                                        <h1 className="font-semibold">Samsung A71 4GB 128GB</h1>
-                                        <p className="text-gray-400">Mobile Phones</p>
-                                    </td>
-                                    <td className="px-4">
-                                        $76
-                                    </td>
-                                    <td className="px-4">
-                                        Samsung
-                                    </td>
-                                    <td className="px-4 text-center">
-                                        18
-                                    </td>
-                                    <td className="px-4">
-                                        Available
-                                    </td>
-                                    <td className="px-4">
-                                        <FaEye />
-                                    </td>
-                                </tr>
-                                <tr className="border-b border-gray-500">
-                                    <td className="py-6 px-4 flex items-center">diudhwuehd28</td>
-                                    <td className="w-[500px]">
-                                        <h1 className="font-semibold">Samsung A71 4GB 128GB</h1>
-                                        <p className="text-gray-400">Mobile Phones</p>
-                                    </td>
-                                    <td className="px-4">
-                                        $76
-                                    </td>
-                                    <td className="px-4">
-                                        Samsung
-                                    </td>
-                                    <td className="px-4 text-center">
-                                        18
-                                    </td>
-                                    <td className="px-4">
-                                        Available
-                                    </td>
-                                    <td className="px-4">
-                                        <FaEye />
-                                    </td>
-                                </tr>
-                                <tr className="border-b border-gray-500">
-                                    <td className="py-6 px-4 flex items-center">diudhwuehd28</td>
-                                    <td className="w-[500px]">
-                                        <h1 className="font-semibold">Samsung A71 4GB 128GB</h1>
-                                        <p className="text-gray-400">Mobile Phones</p>
-                                    </td>
-                                    <td className="px-4">
-                                        $76
-                                    </td>
-                                    <td className="px-4">
-                                        Samsung
-                                    </td>
-                                    <td className="px-4 text-center">
-                                        18
-                                    </td>
-                                    <td className="px-4">
-                                        Available
-                                    </td>
-                                    <td className="px-4">
-                                        <FaEye />
-                                    </td>
-                                </tr>
-
+                                <thead>
+                                    <tr>
+                                        <th className="py-2 px-4">SKU</th>
+                                        <th className="py-2 mx-auto">Name</th>
+                                        <th className="py-2 px-4">Price</th>
+                                        <th className="py-2 px-4">Brand</th>
+                                        <th className="py-2 px-4">Warranty (Months)</th>
+                                        <th className="py-2 px-4">Status</th>
+                                        <th className="py-2 px-4">View</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredProducts.length > 0 ? (
+                                        filteredProducts.map(product => (
+                                            <tr key={product._id} className="border-b border-gray-500">
+                                                <td className="py-6 px-4">{product.sku}</td>
+                                                <td>
+                                                    <h1 className="font-semibold">{truncateText(product.name)}</h1>
+                                                    <p className="text-gray-400">{product.category}</p>
+                                                </td>
+                                                <td className="px-4">{convertPrice(product.price)} {currency}</td>
+                                                <td className="px-4">{product.brand}</td>
+                                                <td className="px-4 text-center">{product.warranty}</td>
+                                                <td className="px-4">{product.status}</td>
+                                                <td className="px-4">
+                                                    <FaEye />
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="7" className="text-center py-4">No products found</td>
+                                        </tr>
+                                    )}
+                                </tbody>
                             </table>
                         </div>
                     </div>

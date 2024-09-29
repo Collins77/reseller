@@ -11,7 +11,7 @@ export const LOGOUT_ROUTE = `${RESELLER_ROUTES}/logout`;
 
 export const SUPPLIER_ROUTES = 'suppliers';
 export const SEARCH_SUPPLIER_ROUTE = `${SUPPLIER_ROUTES}/search`;
-export const GET_SUPPLIER_ROUTES = `${SUPPLIER_ROUTES}/get-suppliers`;
+export const GET_SUPPLIER_DETAILS = `${SUPPLIER_ROUTES}/get-supplier`;
 export const GET_ALL_SUPPLIER_ROUTES = `${SUPPLIER_ROUTES}/get-suppliers`;
 
 export const CATEGORY_ROUTE = 'categories';
