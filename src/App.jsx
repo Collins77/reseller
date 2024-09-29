@@ -28,7 +28,7 @@ import EditPasswordSupp from './pages/Supplier/EditPasswordSupp'
 import { useAppStore } from './redux/store'
 import { useEffect, useState } from 'react'
 import apiClient from './lib/api-client'
-import { GET_RESELLER_INFO } from './lib/constants'
+import { GET_RESELLER_INFO, GET_SUPPLIER_INFO } from './lib/constants'
 import BrandResults from './pages/BrandResults'
 import CategoryResults from './pages/CategoryResults'
 import SearchResults from './pages/SearchResults'
@@ -39,15 +39,28 @@ const PrivateRoute = ({children})=> {
   return isAuthenticated ? children : <Navigate to="/login" />;
 }
 
+const SupplierRoute = ({children})=> {
+  const {supplierInfo} = useAppStore();
+  const isAuthenticated = !!supplierInfo;
+  return isAuthenticated ? children : <Navigate to="/supplier-login" />;
+}
+
 const AuthRoute = ({children})=> {
   const {resellerInfo} = useAppStore();
   const isAuthenticated = !!resellerInfo;
   return isAuthenticated ? <Navigate to="/app" /> : children;
 }
 
+const SupplierAuthRoute = ({children})=> {
+  const {supplierInfo} = useAppStore();
+  const isAuthenticated = !!supplierInfo;
+  return isAuthenticated ? <Navigate to="/supplier" /> : children;
+}
+
 
 function App() {
   const {resellerInfo, setResellerInfo} = useAppStore();
+  const {supplierInfo, setSupplierInfo} = useAppStore();
   const [loading, setLoading] = useState(true);
 
   useEffect(()=> {
@@ -72,7 +85,28 @@ function App() {
     } else {
       setLoading(false)
     }
-  }, [resellerInfo, setResellerInfo])
+    const getSupplierData = async () => {
+      try {
+        const response = await apiClient.get(GET_SUPPLIER_INFO, {withCredentials: true,});
+        if(response.status === 200 && response.data.id) {
+          setSupplierInfo(response.data);
+        } else {
+          setSupplierInfo(undefined);
+        }
+        console.log({response});
+      } catch (err) {
+        console.error(err);
+        setSupplierInfo(undefined);
+      } finally {
+        setLoading(false);
+      }
+    }
+    if(!supplierInfo) {
+      getSupplierData()
+    } else {
+      setLoading(false)
+    }
+  }, [resellerInfo, setResellerInfo, supplierInfo, setSupplierInfo])
 
   if(loading) {
     return <div>Loading....</div>
@@ -95,7 +129,11 @@ function App() {
           </AuthRoute>
         } />
         <Route path="/supplier-signup" element={<SuppSignup />} />
-        <Route path="/supplier-login" element={<SuppLogin />} />
+        <Route path="/supplier-login" element={
+          <SupplierAuthRoute>
+            <SuppLogin />
+          </SupplierAuthRoute>
+        } />
 
 
         {/* <Route element={<PrivateRoute />}> */}
@@ -145,15 +183,51 @@ function App() {
             </PrivateRoute>
           } />
         {/* </Route> */}
-        <Route path='/supplier' element={<Dashboard />} />
-        <Route path='/supplier/products' element={<Products />} />
-        <Route path='/supplier/add-product' element={<AddProduct />} />
-        <Route path='/supplier/ads' element={<Ads />} />
-        <Route path='/supplier/create-ad' element={<AddAd />} />
-        <Route path='/supplier/bulk-upload' element={<BulkUpload />} />
-        <Route path='/supplier/account' element={<Account />} />
-        <Route path='/supplier/account/edit' element={<EditAccount />} />
-        <Route path='/supplier/account/edit/password' element={<EditPasswordSupp />} />
+        <Route path='/supplier' element={
+          <SupplierRoute>
+            <Dashboard />
+          </SupplierRoute>
+        } />
+        <Route path='/supplier/products' element={
+          <SupplierRoute>
+            <Products />
+          </SupplierRoute>
+        } />
+        <Route path='/supplier/add-product' element={
+          <SupplierRoute>
+            <AddProduct />
+          </SupplierRoute>
+        } />
+        <Route path='/supplier/ads' element={
+          <SupplierRoute>
+            <Ads />
+          </SupplierRoute>
+        } />
+        <Route path='/supplier/create-ad' element={
+          <SupplierRoute>
+            <AddAd />
+          </SupplierRoute>
+        } />
+        <Route path='/supplier/bulk-upload' element={
+          <SupplierRoute>
+            <BulkUpload />
+          </SupplierRoute>
+        } />
+        <Route path='/supplier/account' element={
+          <SupplierRoute>
+            <Account />
+          </SupplierRoute>
+        } />
+        <Route path='/supplier/account/edit' element={
+          <SupplierRoute>
+            <EditAccount />
+          </SupplierRoute>
+        } />
+        <Route path='/supplier/account/edit/password' element={
+          <SupplierRoute>
+            <EditPasswordSupp />
+          </SupplierRoute>
+        } />
       </Routes>
     </BrowserRouter>
   )

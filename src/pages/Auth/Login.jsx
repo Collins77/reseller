@@ -10,42 +10,6 @@ import apiClient from '@/lib/api-client';
 import { LOGIN_ROUTE } from '@/lib/constants';
 
 const Login = () => {
-    // const dispatch = useDispatch();
-    // const navigate = useNavigate();
-    // const location = useLocation(); // To get the path user tried to access before login
-    // const { loading, token } = useSelector((state) => state.resellers);    
-    // const [formData, setFormData] = useState({
-    //     email: '',
-    //     password: ''
-    // });
-
-    // const from = location.state?.from?.pathname || '/app';
-
-    // const handleChange = (e) => {
-    //     setFormData({
-    //         ...formData,
-    //         [e.target.name]: e.target.value
-    //     });
-    // };
-
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-    //     try {
-    //         await dispatch(loginReseller(formData)).unwrap(); // Dispatch login action and wait for the result
-    //         toast.success('Login successful!');
-    //         navigate(from, { replace: true }); // Redirect to the requested page or homepage
-    //     } catch (error) {
-    //         toast.error(error.message || 'Failed to login. Please check your credentials.');
-    //     }
-    // };
-
-    // // Redirect if already logged in
-    // useEffect(() => {
-    //     if (token) {
-    //         navigate(from, { replace: true }); // Prevent going back to login if authenticated
-    //     }
-    // }, [token, navigate, from])
-
     const navigate = useNavigate()
     const {setResellerInfo} = useAppStore()
     const [email, setEmail] = useState("")

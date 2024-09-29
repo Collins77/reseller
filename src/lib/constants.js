@@ -10,6 +10,13 @@ export const REMOVE_PROFILE_IMAGE_ROUTE = `${RESELLER_ROUTES}/remove-profile-ima
 export const LOGOUT_ROUTE = `${RESELLER_ROUTES}/logout`;
 
 export const SUPPLIER_ROUTES = 'suppliers';
+export const SUPPLIER_SIGNUP_ROUTE = `${SUPPLIER_ROUTES}/signup`;
+export const SUPPLIER_LOGIN_ROUTE = `${SUPPLIER_ROUTES}/login`;
+export const GET_SUPPLIER_INFO = `${SUPPLIER_ROUTES}/supplier-info`;
+export const SUPPLIER_UPDATE_PROFILE_ROUTE = `${SUPPLIER_ROUTES}/update-reseller`;
+export const SUPPLIER_ADD_PROFILE_IMAGE_ROUTE = `${SUPPLIER_ROUTES}/add-profile-image`;
+export const SUPPLIER_REMOVE_PROFILE_IMAGE_ROUTE = `${SUPPLIER_ROUTES}/remove-profile-image`;
+export const SUPPLIER_LOGOUT_ROUTE = `${SUPPLIER_ROUTES}/logout`;
 export const SEARCH_SUPPLIER_ROUTE = `${SUPPLIER_ROUTES}/search`;
 export const GET_SUPPLIER_DETAILS = `${SUPPLIER_ROUTES}/get-supplier`;
 export const GET_ALL_SUPPLIER_ROUTES = `${SUPPLIER_ROUTES}/get-suppliers`;

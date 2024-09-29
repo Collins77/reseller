@@ -1,36 +1,57 @@
 import SupplierLayout from "@/components/SupplierLayout"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
-import { useState } from "react";
+import apiClient from "@/lib/api-client";
+import { GET_ALL_ADS_BY_SUPPLIER_ROUTE } from "@/lib/constants";
+import { useAppStore } from "@/redux/store";
+import { useEffect, useState } from "react";
 import { FaEye } from "react-icons/fa"
 
 const Ads = () => {
-    const products = [
-        { sku: 'diudhwuehd28', name: 'Samsung A71 4GB 128GB', price: 76, brand: 'Samsung', warranty: 18, status: 'Available' },
-        { sku: 'diudhwuehd29', name: 'iPhone 12', price: 699, brand: 'Apple', warranty: 12, status: 'Available' },
-        { sku: 'diudhwuehd30', name: 'Google Pixel 5', price: 699, brand: 'Google', warranty: 12, status: 'Available' },
-        { sku: 'diudhwuehd31', name: 'OnePlus 8T', price: 749, brand: 'OnePlus', warranty: 12, status: 'Available' },
-        { sku: 'diudhwuehd32', name: 'Xiaomi Mi 11', price: 749, brand: 'Xiaomi', warranty: 24, status: 'Available' },
-        { sku: 'diudhwuehd32', name: 'Xiaomi Mi 11', price: 749, brand: 'Xiaomi', warranty: 24, status: 'Available' },
-        { sku: 'diudhwuehd32', name: 'Xiaomi Mi 11', price: 749, brand: 'Xiaomi', warranty: 24, status: 'Available' },
-        { sku: 'diudhwuehd32', name: 'Xiaomi Mi 11', price: 749, brand: 'Xiaomi', warranty: 24, status: 'Available' },
-        // Add more products as needed
-    ];
+    // const products = [
+    //     { sku: 'diudhwuehd28', name: 'Samsung A71 4GB 128GB', price: 76, brand: 'Samsung', warranty: 18, status: 'Available' },
+    //     { sku: 'diudhwuehd29', name: 'iPhone 12', price: 699, brand: 'Apple', warranty: 12, status: 'Available' },
+    //     { sku: 'diudhwuehd30', name: 'Google Pixel 5', price: 699, brand: 'Google', warranty: 12, status: 'Available' },
+    //     { sku: 'diudhwuehd31', name: 'OnePlus 8T', price: 749, brand: 'OnePlus', warranty: 12, status: 'Available' },
+    //     { sku: 'diudhwuehd32', name: 'Xiaomi Mi 11', price: 749, brand: 'Xiaomi', warranty: 24, status: 'Available' },
+    //     { sku: 'diudhwuehd32', name: 'Xiaomi Mi 11', price: 749, brand: 'Xiaomi', warranty: 24, status: 'Available' },
+    //     { sku: 'diudhwuehd32', name: 'Xiaomi Mi 11', price: 749, brand: 'Xiaomi', warranty: 24, status: 'Available' },
+    //     { sku: 'diudhwuehd32', name: 'Xiaomi Mi 11', price: 749, brand: 'Xiaomi', warranty: 24, status: 'Available' },
+    //     // Add more products as needed
+    // ];
+    const {supplierInfo} = useAppStore();
+
+    const [ads, setAds] = useState([]);
+
+    useEffect(() => {
+        const fetchSupplierProducts = async () => {
+            try {
+              const res = await apiClient.get(`${GET_ALL_ADS_BY_SUPPLIER_ROUTE}/${supplierInfo.id}`);
+              const data = res.data.ads;
+              setAds(data)
+            } catch (error) {
+              console.error("Error fetching products", error);
+            }
+          };
+
+          fetchSupplierProducts()
+    },[supplierInfo.id])
+
 
     const [searchQuery, setSearchQuery] = useState("");
     const itemsPerPage = 4; // Number of products to display per page
     const [currentPage, setCurrentPage] = useState(1);
 
     // Filter products based on search query
-    const filteredProducts = products.filter((product) =>
-        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredAds = ads.filter((ad) =>
+        ad.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     // Calculate the total number of pages
-    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+    const totalPages = Math.ceil(filteredAds.length / itemsPerPage);
 
     // Get the current items to display based on the current page
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const currentProducts = filteredProducts.slice(startIndex, startIndex + itemsPerPage);
+    const currentAds = filteredAds.slice(startIndex, startIndex + itemsPerPage);
 
     const handleNextPage = () => {
         if (currentPage < totalPages) {
@@ -87,27 +108,22 @@ const Ads = () => {
                         <table className="bg-white w-full overflow-scroll">
                             <thead>
                                 <tr className="border-b border-gray-500">
-                                    <th className="py-2 px-4">SKU</th>
-                                    <th className="py-2 mx-auto">NAME</th>
+                                    <th className="py-2 px-4">TITLE</th>
+                                    <th className="py-2 mx-auto">DESCRIPTION</th>
                                     <th className="py-2 px-4">PRICE</th>
-                                    <th className="py-2 px-4">BRAND</th>
-                                    <th className="py-2 px-4">WARRANTY(MONS)</th>
-                                    <th className="py-2 px-4">STATUS</th>
+                                    <th className="py-2 mx-auto">PRODUCT NAME</th>
                                     <th className="py-2 px-4">ACTION</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {currentProducts.map((product, index) => (
+                                {currentAds.map((ad, index) => (
                                     <tr key={index} className="border-b border-gray-500">
-                                        <td className="py-6 px-4 flex items-center">{product.sku}</td>
+                                        <td className="py-6 px-4 flex items-center">{ad.title}</td>
                                         <td className="w-[500px]">
-                                            <h1 className="font-semibold">{product.name}</h1>
-                                            <p className="text-gray-400">Mobile Phones</p>
+                                            <h1 className="font-semibold">{ad.description}</h1>
                                         </td>
-                                        <td className="px-4">${product.price}</td>
-                                        <td className="px-4">{product.brand}</td>
-                                        <td className="px-4 text-center">{product.warranty}</td>
-                                        <td className="px-4">{product.status}</td>
+                                        <td className="px-4">${ad.newPrice}</td>
+                                        <td className="px-4">{ad.productName}</td>
                                         <td className="px-4">
                                             <FaEye />
                                         </td>

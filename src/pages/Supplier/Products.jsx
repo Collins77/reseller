@@ -2,21 +2,31 @@
 
 import SupplierLayout from "@/components/SupplierLayout"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
-import { useState } from "react";
+import apiClient from "@/lib/api-client";
+import { GET_ALL_PRODUCTS_BY_SUPPLIER_ROUTE } from "@/lib/constants";
+import { useAppStore } from "@/redux/store";
+import { useEffect, useState } from "react";
 import { FaEye } from "react-icons/fa"
 
 const Products = () => {
-    const products = [
-        { sku: 'diudhwuehd28', name: 'Samsung A71 4GB 128GB', price: 76, brand: 'Samsung', warranty: 18, status: 'Available' },
-        { sku: 'diudhwuehd29', name: 'iPhone 12', price: 699, brand: 'Apple', warranty: 12, status: 'Available' },
-        { sku: 'diudhwuehd30', name: 'Google Pixel 5', price: 699, brand: 'Google', warranty: 12, status: 'Available' },
-        { sku: 'diudhwuehd31', name: 'OnePlus 8T', price: 749, brand: 'OnePlus', warranty: 12, status: 'Available' },
-        { sku: 'diudhwuehd32', name: 'Xiaomi Mi 11', price: 749, brand: 'Xiaomi', warranty: 24, status: 'Available' },
-        { sku: 'diudhwuehd32', name: 'Xiaomi Mi 11', price: 749, brand: 'Xiaomi', warranty: 24, status: 'Available' },
-        { sku: 'diudhwuehd32', name: 'Xiaomi Mi 11', price: 749, brand: 'Xiaomi', warranty: 24, status: 'Available' },
-        { sku: 'diudhwuehd32', name: 'Xiaomi Mi 11', price: 749, brand: 'Xiaomi', warranty: 24, status: 'Available' },
-        // Add more products as needed
-    ];
+    const {supplierInfo} = useAppStore();
+
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        const fetchSupplierProducts = async () => {
+            try {
+              const res = await apiClient.get(`${GET_ALL_PRODUCTS_BY_SUPPLIER_ROUTE}/${supplierInfo.id}`);
+              const data = res.data.products;
+              setProducts(data)
+            } catch (error) {
+              console.error("Error fetching products", error);
+            }
+          };
+
+          fetchSupplierProducts()
+    },[supplierInfo.id])
+
     const [searchQuery, setSearchQuery] = useState("");
     const itemsPerPage = 4; // Number of products to display per page
     const [currentPage, setCurrentPage] = useState(1);
@@ -76,7 +86,7 @@ const Products = () => {
                             />
                         </div>
                         <div>
-                            <a href="/supplier/add-product" className="bg-orange-500 px-2 py-1 text-white rounded-md hover:bg-orange-800">Create Ad</a>
+                            <a href="/supplier/add-product" className="bg-orange-500 px-2 py-1 text-white rounded-md hover:bg-orange-800">Add Product</a>
                         </div>
                     </div>
                     <div>
