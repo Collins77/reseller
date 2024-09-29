@@ -6,13 +6,33 @@ import { FaRegUser } from "react-icons/fa";
 import { IoIosLogOut } from "react-icons/io";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import logo from "../assets/ResellerSprint icon.png";
+import { SUPPLIER_LOGOUT_ROUTE } from "@/lib/constants";
+import apiClient from "@/lib/api-client";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import { useAppStore } from "@/redux/store";
 
 const SupplierSidebar = ({ isOpen }) => {
   const [isProductsOpen, setIsProductsOpen] = useState(false);
   const [isAdsOpen, setIsAdsOpen] = useState(false);
+  const { setSupplierInfo } = useAppStore();
+    const navigate = useNavigate();
 
   const toggleProducts = () => setIsProductsOpen(!isProductsOpen);
   const toggleAds = () => setIsAdsOpen(!isAdsOpen);
+
+  const logOut = async () => {
+    try {
+        const response = await apiClient.post(SUPPLIER_LOGOUT_ROUTE, {}, { withCredentials: true });
+        if (response.status === 200) {
+            toast("Logout successful")
+            navigate("/supplier-login");
+            setSupplierInfo(null);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
 
   return (
     <aside
@@ -106,7 +126,7 @@ const SupplierSidebar = ({ isOpen }) => {
         </ul>
 
         <div className="p-2 absolute bottom-2 w-full">
-          <button className="flex items-center gap-3 border w-full p-2 rounded-md hover:bg-gray-200">
+          <button onClick={logOut} className="flex items-center gap-3 border w-full p-2 rounded-md hover:bg-gray-200">
             <IoIosLogOut size={isOpen ? 20 : 24} />
             {isOpen && "Sign Out"}
           </button>

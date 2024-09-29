@@ -7,8 +7,66 @@ import { MdEmail } from "react-icons/md"
 import { IoLocation } from "react-icons/io5"
 import { FaPhone, FaCartFlatbed } from "react-icons/fa6"
 import { FaDollarSign, FaRegEdit } from "react-icons/fa"
+import { useAppStore } from "@/redux/store"
+import apiClient from "@/lib/api-client"
+import { GET_ALL_ADS_BY_SUPPLIER_ROUTE, GET_ALL_PRODUCTS_BY_SUPPLIER_ROUTE, GET_SUPPLIER_DETAILS } from "@/lib/constants"
+import { useEffect, useState } from "react"
 
 const Account = () => {
+    const { supplierInfo } = useAppStore()
+    const [productsBySupplier, setProductsBySupplier] = useState({});
+    const [adsBySupplier, setAdsBySupplier] = useState({});
+    const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchSupplierDetails = async () => {
+          try {
+            const response = await apiClient.get(`${GET_SUPPLIER_DETAILS}/${supplierInfo.id}`);
+            // setSupplier(response.data.supplier);
+             // Set the supplier details in state
+            await Promise.all([
+              fetchSupplierProducts(response.data.supplier._id),
+              fetchSupplierAds(response.data.supplier._id),
+            ]);
+            setLoading(false); // Set loading to false
+          } catch (err) {
+            console.error(err);
+            setError('Failed to fetch supplier details'); // Handle error
+            setLoading(false); // Set loading to false
+          }
+        };
+    
+        fetchSupplierDetails(); // Call the function to fetch data
+      }, [supplierInfo.id]);
+    
+      const fetchSupplierProducts = async (supplierId) => {
+        try {
+          const res = await apiClient.get(`${GET_ALL_PRODUCTS_BY_SUPPLIER_ROUTE}/${supplierId}`);
+          const data = res.data.products;
+          setProductsBySupplier((prev) => ({
+            ...prev,
+            [supplierId]: data, // Map supplier ID to their products
+          }));
+        } catch (error) {
+          console.error("Error fetching products", error);
+        }
+      };
+    
+      const fetchSupplierAds = async (supplierId) => {
+        try {
+          const res = await apiClient.get(`${GET_ALL_ADS_BY_SUPPLIER_ROUTE}/${supplierId}`);
+          const data = res.data.ads;
+          setAdsBySupplier((prev) => ({
+            ...prev,
+            [supplierId]: data, // Map supplier ID to their ads
+          }));
+        } catch (error) {
+          console.error("Error fetching ads", error);
+        }
+      };
+
+
     return (
         <SupplierLayout>
             <div>
@@ -36,20 +94,20 @@ const Account = () => {
                         </div>
                     </div>
                     <div className="mb-5">
-                        <h1 className="font-bold text-lg">Cotek Technologies Inc</h1>
+                        <h1 className="font-bold text-lg">{supplierInfo.companyName}</h1>
                     </div>
                     <div className="grid grid-cols-3 mb-4">
                         <div className="flex items-center gap-2 border-r p-2">
                             <MdEmail />
-                            <p>mutuamuema330@gmail.com</p>
+                            <p>{supplierInfo.companyEmail}</p>
                         </div>
                         <div className="flex items-center gap-2 border-r p-2">
                             <IoLocation />
-                            <p>172, Boulevard St, Kenya</p>
+                            <p>{supplierInfo.address}</p>
                         </div>
                         <div className="flex items-center gap-2 border-r p-2">
                             <FaPhone />
-                            <p>+254791448827</p>
+                            <p>{supplierInfo.phoneNumber}</p>
                         </div>
                     </div>
                     <div className="flex justify-between gap-4">
@@ -69,22 +127,22 @@ const Account = () => {
                                 <div>
                                     <div className="flex items-center mb-2 justify-between">
                                         <p className="font-bold">First Name:</p>
-                                        <p>Collins</p>
+                                        <p>{supplierInfo.firstName}</p>
                                     </div>
                                     <div className="flex items-center mb-2 justify-between">
                                         <p className="font-bold">Last Name:</p>
-                                        <p>Muema</p>
+                                        <p>{supplierInfo.lastName}</p>
                                     </div>
                                     <div className="flex items-center mb-2 justify-between">
                                         <p className="font-bold">Email Address:</p>
-                                        <p>mutuamuema330@gmail.com</p>
+                                        <p>{supplierInfo.email}</p>
                                     </div>
                                     <div className="flex justify-between gap-4">
                                         <a href="/supplier/account/edit" className="bg-green-500 text-white gap-1 flex items-center justify-center rounded-md px-3 py-1 w-[50%]">
                                             <FaRegEdit />
                                             Edit Information
                                         </a>
-                                        <a href="/supplier/account/edit" className="bg-red-500 text-white gap-1 flex items-center justify-center rounded-md px-3 py-1 w-[50%]">
+                                        <a href="/supplier/account/edit/password" className="bg-red-500 text-white gap-1 flex items-center justify-center rounded-md px-3 py-1 w-[50%]">
                                             <FaRegEdit />
                                             Change Password
                                         </a>
@@ -95,7 +153,7 @@ const Account = () => {
                         <div className="w-[60%] bg-gray-50/40 shadow-lg p-2 flex flex-wrap gap-4">
                             <div className="flex items-center justify-between p-2 bg-white shadow-md border rounded-md w-[48%]">
                                 <div className="flex flex-col gap-2">
-                                    <h1 className="font-bold text-lg">10</h1>
+                                    <h1 className="font-bold text-lg">{productsBySupplier[supplierInfo.id]?.length || 0}</h1>
                                     <p>Total <a href="/supplier/products" className="text-blue-500 underline">Products</a></p>
                                 </div>
                                 <div className="w-[50px] h-[50px] bg-gray-100 rounded-full border border-blue-600 flex items-center justify-center">
@@ -104,7 +162,7 @@ const Account = () => {
                             </div>
                             <div className="flex items-center justify-between p-2 bg-white shadow-md border rounded-md w-[48%]">
                                 <div className="flex flex-col gap-2">
-                                    <h1 className="font-bold text-lg">10</h1>
+                                    <h1 className="font-bold text-lg">{adsBySupplier[supplierInfo.id]?.length || 0}</h1>
                                     <p>Total <a href="/supplier/ads" className="text-blue-500 underline">Ads</a></p>
                                 </div>
                                 <div className="w-[50px] h-[50px] bg-gray-100 rounded-full border border-orange-600 flex items-center justify-center">
@@ -113,14 +171,14 @@ const Account = () => {
                             </div>
                             <div className="flex items-center justify-between p-2 bg-white shadow-md border rounded-md w-[48%]">
                                 <div className="flex flex-col gap-2">
-                                    <h1 className="font-bold text-lg">145</h1>
+                                    <h1 className="font-bold text-lg">{supplierInfo.dollarExchangeRate}</h1>
                                     <p>Current Dollar Exchange Rate</p>
                                 </div>
                                 <div className="w-[50px] h-[50px] bg-gray-100 rounded-full border border-green-600 flex items-center justify-center">
                                     <FaDollarSign />
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                 </div>

@@ -1,11 +1,53 @@
 import SupplierLayout from '@/components/SupplierLayout'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb'
+import { useAppStore } from '@/redux/store';
+import { server } from '@/server';
+import axios from 'axios';
+import { useState } from 'react';
 // import React from 'react'
 import { FaArrowRight } from 'react-icons/fa'
+import { toast } from 'sonner';
 
 const EditPasswordSupp = () => {
-  return (
-    <SupplierLayout>
+    const [oldPassword, setOldPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const {supplierInfo} = useAppStore();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // Basic validation
+        if (!oldPassword || !newPassword || !confirmPassword) {
+            toast.error('Please fill in all fields.');
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            toast.error('New passwords do not match.');
+            return;
+        }
+
+        try {
+            // Replace with your API endpoint
+            await axios.put(`${server}/suppliers/change-password/${supplierInfo.id}`, {oldPassword, newPassword, confirmPassword}, {withCredentials: true});
+
+            // if (!response.ok) {
+            //     const { message } = await response.json();
+            //     throw new Error(message);
+            // }
+
+            toast.success('Password changed successfully.');
+            // Reset form fields
+            setOldPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+        } catch (error) {
+            toast.error(error.message || 'Failed to change password.');
+        }
+    };
+    return (
+        <SupplierLayout>
             <div>
                 <div>
                     <div className="mt-3 mb-5 px-[20px]">
@@ -31,7 +73,7 @@ const EditPasswordSupp = () => {
                         <h1 className="text-xl font-bold">Edit Password</h1>
                     </div>
                     <div className="p-5">
-                        <form action="" className="w-full">
+                        <form onSubmit={handleSubmit} className="w-full">
                             <h1 className="font-bold mb-3">Information</h1>
                             <div className="flex gap-4 w-full mb-5 pb-4 border-b border-dashed">
                                 <div className="w-[40%]">
@@ -41,15 +83,15 @@ const EditPasswordSupp = () => {
                                 <div className="w-[60%]">
                                     <div className="flex flex-col gap-3 mb-4">
                                         <label htmlFor="">Current Password</label>
-                                        <input type="text" className="border rounded-sm outline-none p-2" />
+                                        <input type="password" name='oldPassword' value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} className="border rounded-sm outline-none p-2" />
                                     </div>
                                     <div className="flex flex-col gap-3 mb-4">
                                         <label htmlFor="">New Password</label>
-                                        <input type="text" className="border rounded-sm outline-none p-2" />
+                                        <input type="password" name='newPassword' value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="border rounded-sm outline-none p-2" />
                                     </div>
                                     <div className="flex flex-col gap-3 mb-4">
                                         <label htmlFor="">Confirm New Password</label>
-                                        <input type="text" className="border rounded-sm outline-none p-2" />
+                                        <input type="password" name='confirmPassword' value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="border rounded-sm outline-none p-2" />
                                     </div>
                                 </div>
                             </div>
@@ -60,7 +102,7 @@ const EditPasswordSupp = () => {
                                 </a>
                                 <div className="flex gap-2 items-center">
                                     <button className="border border-orange-500 px-2 py-1 rounded-md">Erase Changes</button>
-                                    <button className="border border-orange-500 px-2 py-1 rounded-md bg-orange-500 text-white">Submit Changes</button>
+                                    <button type='submit' className="border border-orange-500 px-2 py-1 rounded-md bg-orange-500 text-white">Submit Changes</button>
                                 </div>
                             </div>
                         </form>
@@ -68,7 +110,7 @@ const EditPasswordSupp = () => {
                 </div>
             </div>
         </SupplierLayout>
-  )
+    )
 }
 
 export default EditPasswordSupp

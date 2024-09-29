@@ -1,16 +1,47 @@
 // import React from 'react'
-import { useState } from "react";
+import apiClient from "@/lib/api-client";
+import { SUPPLIER_LOGOUT_ROUTE } from "@/lib/constants";
+import { useAppStore } from "@/redux/store";
+import { useEffect, useState } from "react";
 import { MdMarkUnreadChatAlt } from "react-icons/md";
 import { RiMenu3Line } from "react-icons/ri";
 import { RxCross2 } from "react-icons/rx";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const SupplierNavbar = ({isOpen, toggleSidebar}) => {
     // const [isOpen, setIsOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const { supplierInfo, setSupplierInfo } = useAppStore();
+    const navigate = useNavigate();
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
 
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen);
     };
+
+    const logOut = async () => {
+        try {
+            const response = await apiClient.post(SUPPLIER_LOGOUT_ROUTE, {}, { withCredentials: true });
+            if (response.status === 200) {
+                toast("Logout successful")
+                setDropdownOpen(false);
+                navigate("/supplier-login");
+                setSupplierInfo(null);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        if(supplierInfo) {
+          setFirstName(supplierInfo.firstName);
+          setLastName(supplierInfo.lastName);
+        }
+      }, [supplierInfo]);
+
   return (
     <header className="bg-white shadow-md px-4 py-2 sticky top-0 flex items-center justify-between">
       <div className="flex gap-2">
@@ -31,13 +62,17 @@ const SupplierNavbar = ({isOpen, toggleSidebar}) => {
                     >
                         <h1 className="text-white uppercase">
                             {/* {reseller ? `${reseller.firstName.charAt(0)}${reseller.lastName.charAt(0)}` : "NN"} */}
-                            <h1>CM</h1>
+                            <h1 className="text-white uppercase">
+                            {firstName?.charAt(0) && lastName?.charAt(0)
+                                ? `${firstName.charAt(0)}${lastName.charAt(0)}`
+                                : "NN"}
+                        </h1>
                         </h1>
                     </div>
 
                     {/* Dropdown menu */}
                     {dropdownOpen && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
+                        <div className="absolute z-10 right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
                             <ul className="py-2">
                                 <li>
                                     <a href="/supplier/account" className="block px-4 py-2 hover:bg-gray-100">
@@ -45,7 +80,7 @@ const SupplierNavbar = ({isOpen, toggleSidebar}) => {
                                     </a>
                                 </li>
                                 <li>
-                                    <button className="block px-4 py-2 hover:bg-gray-100">
+                                    <button onClick={logOut} className="block px-4 py-2 hover:bg-gray-100">
                                         Logout
                                     </button>
                                 </li>
