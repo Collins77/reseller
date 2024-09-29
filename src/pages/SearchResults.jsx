@@ -1,38 +1,33 @@
-// import React from 'react'
-
-import AppNavbar from "@/components/AppNavbar"
-import Footer from "@/components/Footer"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
-import { FaEye, FaFileCsv } from "react-icons/fa"
-import { GrAppleAppStore } from "react-icons/gr"
-import { IoLogoGooglePlaystore } from "react-icons/io5"
+// SearchResults.js
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom"; // Assuming you are using React Router
+import { server } from "@/server"; // Adjust the import based on your structure
+import axios from "axios";
+import { GrAppleAppStore } from "react-icons/gr";
+import { IoLogoGooglePlaystore } from "react-icons/io5";
+import Footer from "@/components/Footer";
 import { saveAs } from 'file-saver';
-import { useEffect, useState } from "react"
-import apiClient from "@/lib/api-client"
+import apiClient from "@/lib/api-client";
+import { GET_ALL_BRANDS_ROUTE, GET_ALL_CATEGORIES_ROUTE, GET_ALL_SUPPLIER_ROUTES } from "@/lib/constants";
+import AppNavbar from "@/components/AppNavbar";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import backgroundImage from "../assets/pexels-pixabay-262353.jpg";
-import { GET_ALL_BRANDS_ROUTE, GET_ALL_PRODUCTS, GET_ALL_SUPPLIER_ROUTES } from "@/lib/constants"
-import { useParams } from "react-router-dom"
+import { FaEye, FaFileCsv } from "react-icons/fa";
 
-const CategoryResults = () => {
-    const [products, setProducts] = useState([]);
+const SearchResults = () => {
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const query = new URLSearchParams(useLocation().search).get("query"); // Get the query parameter
+    // const [products, setProducts] = useState([]);
     const [suppliers, setSuppliers] = useState([]);
     const [brands, setBrands] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [brandFilter, setBrandFilter] = useState('');
+    const [categoryFilter, setCategoryFilter] = useState('');
     const [supplierFilter, setSupplierFilter] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
-    const { slug } = useParams()
-
-    const reverseSlug = (slug) => {
-        return slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-    };
     
     useEffect(() => {
-        const fetchProducts = async () => {
-            const res = await apiClient.get(GET_ALL_PRODUCTS, {}, { withCredentials: true });
-            setProducts(res.data);
-        };
-
         const fetchSuppliers = async () => {
             const res = await apiClient.get(GET_ALL_SUPPLIER_ROUTES, {}, { withCredentials: true });
             setSuppliers(res.data.suppliers);
@@ -42,8 +37,12 @@ const CategoryResults = () => {
             const res = await apiClient.get(GET_ALL_BRANDS_ROUTE, {}, { withCredentials: true });
             setBrands(res.data);
         };
+        const fetchCategories = async () => {
+            const res = await apiClient.get(GET_ALL_CATEGORIES_ROUTE, {}, { withCredentials: true });
+            setCategories(res.data);
+        };
 
-        fetchProducts();
+        fetchCategories();
         fetchSuppliers();
         fetchBrands();
     }, []);
@@ -53,13 +52,11 @@ const CategoryResults = () => {
         return supplier ? supplier.companyName : 'Unknown Supplier';
     };
 
-    const categoryName = reverseSlug(slug); // Reverse the slug to get the original category name
-
-    const filteredProducts = products.filter(product => product.category.toLowerCase() === categoryName.toLowerCase());
 
     const filters = {  
         supplier: supplierFilter,    // Assumes supplierFilter is defined
-        brand: brandFilter    // Assumes supplierFilter is defined
+        brand: brandFilter,    // Assumes supplierFilter is defined
+        category: categoryFilter,    // Assumes supplierFilter is defined
     };
     
     const filteredProducts2 = filteredProducts.filter(product => {
@@ -76,6 +73,8 @@ const CategoryResults = () => {
                     return product.category === filterValue; // Check category name
                 case 'supplier':
                     return product.supplier === filterValue;   // Check supplier ID
+                case 'brand':
+                    return product.brand === filterValue;   // Check supplier ID
                 default:
                     return true; // Fallback to include the product
             }
@@ -136,8 +135,29 @@ const CategoryResults = () => {
         }
     };
 
-  return (
-    <div>
+    useEffect(() => {
+        const fetchSuppliers = async () => {
+            try {
+                const response = await axios.get(`${server}/products/get-products`);
+                const products = await response.data;
+                // Filter suppliers based on the search query
+                const results = products.filter(product => {
+                    const matchesName = product.name.toLowerCase().includes(query.toLowerCase());
+                    const matchesCategory = product.category.toLowerCase().includes(query.toLowerCase());
+                    const matchesBrand = product.brand && product.brand.toLowerCase().includes(query.toLowerCase());
+                    return matchesName || matchesCategory || matchesBrand;
+                });
+                setFilteredProducts(results);
+            } catch (error) {
+                console.error('Error fetching suppliers:', error);
+            }
+        };
+
+        fetchSuppliers();
+    }, [query]); // Fetch suppliers whenever the query changes
+
+    return (
+        <div>
         <AppNavbar />
         <div className="h-[120px]" style={{
                 backgroundImage: `url(${backgroundImage})`,
@@ -146,7 +166,7 @@ const CategoryResults = () => {
                 backgroundPosition: 'center',
             }}>
                 <div className="bg-black/70 h-full w-full flex items-center justify-center flex-col gap-4">
-                    <h1 className="text-4xl text-orange-500">Brand: {slug}</h1>
+                    <h1 className="text-4xl text-orange-500">Search Results</h1>
                 </div>
             </div>
 
@@ -158,13 +178,13 @@ const CategoryResults = () => {
                         </BreadcrumbItem>
                         <BreadcrumbSeparator />
                         <BreadcrumbItem>
-                            <BreadcrumbPage href="/suppliers">Categories</BreadcrumbPage>
+                            <BreadcrumbPage href="/suppliers">Search-Results</BreadcrumbPage>
                         </BreadcrumbItem>
                     </BreadcrumbList>
                 </Breadcrumb>
             </div>
 
-            <div className="px-[40px] grid grid-cols-2 gap-3 mb-8">
+            <div className="px-[40px] grid grid-cols-3 gap-3 mb-8">
                 <div className="flex flex-col gap-2">
                     <label htmlFor="">Filter by brands</label>
                     <select className="border rounded-md p-3" onChange={(e) => setBrandFilter(e.target.value)}>
@@ -172,6 +192,17 @@ const CategoryResults = () => {
                         {brands.map(brand => (
                             <option key={brand._id} value={brand.name}>
                                 {brand.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="flex flex-col gap-2">
+                    <label htmlFor="">Filter by categories</label>
+                    <select className="border rounded-md p-3" onChange={(e) => setCategoryFilter(e.target.value)}>
+                        <option value="">All Categories</option>
+                        {categories.map(category => (
+                            <option key={category._id} value={category.name}>
+                                {category.name}
                             </option>
                         ))}
                     </select>
@@ -276,7 +307,7 @@ const CategoryResults = () => {
 
             <Footer />
     </div>
-  )
-}
+    );
+};
 
-export default CategoryResults
+export default SearchResults;

@@ -31,6 +31,7 @@ import apiClient from './lib/api-client'
 import { GET_RESELLER_INFO } from './lib/constants'
 import BrandResults from './pages/BrandResults'
 import CategoryResults from './pages/CategoryResults'
+import SearchResults from './pages/SearchResults'
 
 const PrivateRoute = ({children})=> {
   const {resellerInfo} = useAppStore();
@@ -126,6 +127,11 @@ function App() {
           <Route path="/app/categories/view/:slug" element={
             <PrivateRoute>
               <CategoryResults />
+            </PrivateRoute>
+          } />
+          <Route path="/app/search" element={
+            <PrivateRoute>
+              <SearchResults />
             </PrivateRoute>
           } />
           <Route path="/app/account" element={

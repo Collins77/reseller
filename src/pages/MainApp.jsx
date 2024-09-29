@@ -10,10 +10,17 @@ import { GrAppleAppStore } from "react-icons/gr";
 import { useEffect, useState } from "react";
 import { server } from "@/server";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const MainApp = () => {
     const [suppliers, setSuppliers] = useState([]);
     const [brands, setBrands] = useState([]);
+    const navigate = useNavigate();
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value);
+    };
 
     const createSlug = (name) => {
         return name.toLowerCase().replace(/ /g, '-');  // Convert to lowercase and replace spaces with hyphens
@@ -49,6 +56,13 @@ const MainApp = () => {
         fetchBrands();
         fetchSuppliers();
     }, []);
+
+
+    const handleSearchSubmit = (event) => {
+        event.preventDefault(); // Prevent default form submission
+        navigate(`/app/search?query=${encodeURIComponent(searchQuery)}`); // Navigate to search results page
+    };
+
     return (
         <div>
             <AppNavbar />
@@ -59,9 +73,9 @@ const MainApp = () => {
             }}>
                 <div className="flex flex-col items-center bg-black/50 justify-center gap-3 px-[80px] h-full w-full">
                     <h1 className="text-5xl text-center font-bold text-white">Access Genuine Wholesale Suppliers In Nairobi - Kenya & Beyond</h1>
-                    <form action="/search" className="w-full px-4">
+                    <form onSubmit={handleSearchSubmit} className="w-full px-4">
                         <div className="relative w-full max-w-xl mx-auto bg-white rounded-md">
-                            <input placeholder="Search Here" className="rounded-md w-full h-16 bg-transparent py-1 pl-5 pr-32 outline-none border-2 border-gray-100 shadow-md hover:outline-none focus:ring-orange-200 focus:border-orange-200" type="text" name="query" id="query" />
+                            <input placeholder="Search Here" value={searchQuery} onChange={handleSearchChange} className="rounded-md w-full h-16 bg-transparent py-1 pl-5 pr-32 outline-none border-2 border-gray-100 shadow-md hover:outline-none focus:ring-orange-200 focus:border-orange-200" type="text" name="query" id="query" />
                             <button type="submit" className="absolute inline-flex items-center h-10 px-4 py-2 text-sm text-white transition duration-150 ease-in-out rounded-md outline-none right-3 top-3 bg-orange-600 sm:px-6 sm:text-base sm:font-medium hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
                                 <svg className="-ml-0.5 sm:-ml-1 mr-2 w-4 h-4 sm:h-5 sm:w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
