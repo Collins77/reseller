@@ -125,7 +125,7 @@ const MainApp = () => {
                         </div>
                     </a> */}
                     {suppliers.slice(0, 4).map((supplier) => (
-                        <a key={supplier._id} href={`/app/suppliers/${supplier._id}`} className="border p-5 rounded-sm">
+                        <a key={supplier._id} href={`/app/suppliers/view/${supplier._id}`} className="border p-5 rounded-sm">
                             <div className="flex items-center gap-2">
                                 <div className="w-[80px] h-[80px] bg-gray-300 rounded-full flex items-center justify-center">
                                     <img src={logo} alt={supplier.name} className="h-[60px] w-[60px]" />

@@ -13,6 +13,7 @@ import { GrAppleAppStore } from "react-icons/gr";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import apiClient from "@/lib/api-client";
+import Papa from "papaparse"; 
 import { GET_ALL_ADS_BY_SUPPLIER_ROUTE, GET_ALL_BRANDS_ROUTE, GET_ALL_CATEGORIES_ROUTE, GET_ALL_PRODUCTS_BY_SUPPLIER_ROUTE, GET_SUPPLIER_DETAILS } from "@/lib/constants";
 
 
@@ -124,6 +125,29 @@ const SingleSupplierPage = () => {
             }
         });
     });
+
+    const exportCSV = () => {
+        const csvData = filteredProducts.map(product => ({
+            SKU: product.sku,
+            Name: product.name,
+            Price: convertPrice(product.price),
+            Brand: product.brand,
+            Category: product.category,
+            Warranty: product.warranty,
+            Status: product.status,
+        }));
+
+        const csv = Papa.unparse(csvData); // Convert the product data to CSV format
+
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `products_${supplier.companyName}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
     if (loading) return <div className="spinner">Loading...</div>; // Show loading spinner
     if (error) return <div className="error-message">{error}</div>;
@@ -246,7 +270,7 @@ const SingleSupplierPage = () => {
                                         <option value="KES">KES</option>
                                     </select>
                                 </div>
-                                <button className="bg-blue-600 text-white px-2 flex gap-1 items-center py-1 rounded-sm">
+                                <button onClick={exportCSV} className="bg-blue-600 text-white px-2 flex gap-1 items-center py-1 rounded-sm">
                                     Export
                                     <FaFileCsv />
                                 </button>
