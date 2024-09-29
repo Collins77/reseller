@@ -29,6 +29,8 @@ import { useAppStore } from './redux/store'
 import { useEffect, useState } from 'react'
 import apiClient from './lib/api-client'
 import { GET_RESELLER_INFO } from './lib/constants'
+import BrandResults from './pages/BrandResults'
+import CategoryResults from './pages/CategoryResults'
 
 const PrivateRoute = ({children})=> {
   const {resellerInfo} = useAppStore();
@@ -114,6 +116,16 @@ function App() {
           <Route path="/app/suppliers/view/:id" element={
             <PrivateRoute>
               <SingleSupplierPage />
+            </PrivateRoute>
+          } />
+          <Route path="/app/brands/view/:slug" element={
+            <PrivateRoute>
+              <BrandResults />
+            </PrivateRoute>
+          } />
+          <Route path="/app/categories/view/:slug" element={
+            <PrivateRoute>
+              <CategoryResults />
             </PrivateRoute>
           } />
           <Route path="/app/account" element={

@@ -9,9 +9,15 @@ import Footer from "@/components/Footer";
 import { GrAppleAppStore } from "react-icons/gr";
 import { useEffect, useState } from "react";
 import { server } from "@/server";
+import axios from "axios";
 
 const MainApp = () => {
     const [suppliers, setSuppliers] = useState([]);
+    const [brands, setBrands] = useState([]);
+
+    const createSlug = (name) => {
+        return name.toLowerCase().replace(/ /g, '-');  // Convert to lowercase and replace spaces with hyphens
+    };
 
     // Fetch suppliers
     useEffect(() => {
@@ -27,6 +33,20 @@ const MainApp = () => {
             }
         };
 
+        // Fetch brands
+
+        const fetchBrands = async () => {
+            try {
+                const response = await axios.get(`${server}/brands`); // Update this URL to the correct endpoint
+                const data = await response.data;
+                // console.log(response);
+                setBrands(data); // Assuming the API returns an array of brands
+            } catch (error) {
+                console.error('Error fetching brands:', error);
+            }
+        };
+
+        fetchBrands();
         fetchSuppliers();
     }, []);
     return (
@@ -56,21 +76,11 @@ const MainApp = () => {
                 <h1 className="text-2xl text-orange-500">Featured Brands</h1>
                 <p className="mb-4 text-gray-500">Check out some of the featured brands</p>
                 <div className="grid grid-cols-4 gap-4 px-[40px]">
-                    <div className="w-full flex items-center justify-center p-5 border shadow-sm rounded-md cursor-pointer hover:bg-orange-500 hover:text-white">
-                        <h1>HP</h1>
-                    </div>
-
-                    <div className="w-full flex items-center justify-center p-5 border shadow-sm rounded-md cursor-pointer hover:bg-orange-500 hover:text-white">
-                        <h1>HP</h1>
-                    </div>
-
-                    <div className="w-full flex items-center justify-center p-5 border shadow-sm rounded-md cursor-pointer hover:bg-orange-500 hover:text-white">
-                        <h1>HP</h1>
-                    </div>
-
-                    <div className="w-full flex items-center justify-center p-5 border shadow-sm rounded-md cursor-pointer hover:bg-orange-500 hover:text-white">
-                        <h1>HP</h1>
-                    </div>
+                    {brands.slice(0, 4).map((brand) => (  // Dynamically render brands
+                        <a href={`/app/brands/view/${createSlug(brand.name)}`} key={brand._id} className="w-full flex items-center justify-center p-5 border shadow-sm rounded-md cursor-pointer hover:bg-orange-500 hover:text-white">
+                            <h1>{brand.name}</h1>  {/* Display brand name */}
+                        </a>
+                    ))}
 
                 </div>
             </div>
@@ -87,43 +97,7 @@ const MainApp = () => {
                         </a>
                     </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                    {/* <a href="" className="border p-5 rounded-sm">
-                        <div className="flex items-center gap-2">
-                            <div className="w-[80px] h-[80px] bg-gray-300 rounded-full flex items-center justify-center">
-                                <img src={logo} alt="" className="h-[60px] w-[60px]" />
-                            </div>
-                            <div>
-                                <h1 className="text-2xl font-bold mb-1">Cotek Technologies</h1>
-                                <div className=" flex gap-1 items-center mb-2 text-gray-500">
-                                    <IoLocation color="orange" />
-                                    172, Boulevard St. Kenya
-                                </div>
-                                <div className=" flex gap-1 items-center mb-2 text-gray-500">
-                                    <FaPhone color="green" />
-                                    +254791448827
-                                </div>
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-4 gap-2">
-                            <div className="flex flex-col items-center justify-center border-r">
-                                <h1>10</h1>
-                                <p>Products</p>
-                            </div>
-                            <div className="flex flex-col items-center justify-center border-r">
-                                <h1>1</h1>
-                                <p>Ads</p>
-                            </div>
-                            <div className="flex flex-col items-center justify-center border-r">
-                                <h1>140</h1>
-                                <p>Dollar Rate</p>
-                            </div>
-                            <div className="flex flex-col items-center justify-center border-r">
-                                <h1>supplier</h1>
-                                <p>Type</p>
-                            </div>
-                        </div>
-                    </a> */}
+                <div className="grid grid-cols-2 gap-3">x
                     {suppliers.slice(0, 4).map((supplier) => (
                         <a key={supplier._id} href={`/app/suppliers/view/${supplier._id}`} className="border p-5 rounded-sm">
                             <div className="flex items-center gap-2">

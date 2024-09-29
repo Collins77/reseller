@@ -10,9 +10,8 @@ import { useAppStore } from "@/redux/store";
 import apiClient from "@/lib/api-client";
 import { LOGOUT_ROUTE } from "@/lib/constants";
 import { useNavigate } from "react-router-dom";
-// import axios from "axios";
-
-// import { useSelector } from "react-redux";
+import axios from "axios";
+import { server } from "@/server";
 
 const AppNavbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -21,6 +20,27 @@ const AppNavbar = () => {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const navigate = useNavigate()
+    const [categories, setCategories] = useState([]);
+
+    const createSlug = (name) => {
+        return name.toLowerCase().replace(/ /g, '-');  // Convert to lowercase and replace spaces with hyphens
+    };
+
+    // Fetch suppliers
+    useEffect(() => {
+
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get(`${server}/categories`); // Update this URL to the correct endpoint
+                const data = await response.data;
+                setCategories(data); 
+            } catch (error) {
+                console.error('Error fetching brands:', error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     useEffect(() => {
         if(resellerInfo) {
@@ -53,17 +73,25 @@ const AppNavbar = () => {
         }
     }
 
+    const handleCategoryChange = (event) => {
+        const selectedCategory = event.target.value;
+        if (selectedCategory) {
+            navigate(`/app/categories/view/${createSlug(selectedCategory)}`); // Navigate to the category results page
+        }
+    };
+
     return (
         <div className="w-full sticky z-40 top-0 bg-white h-[70px] flex justify-between border-b-2 items-center px-[40px] py-[20px]">
             <div className="flex gap-4 items-center">
                 <img src={logo} alt="logo" className='w-[100px] h-full' />
                 <div>
-                    <select className="border rounded-lg p-2 bg-white">
+                    <select className="border rounded-lg p-2 bg-white" onChange={handleCategoryChange}>
                         <option value="">Categories</option>
-                        <option value="category1">Category 1</option>
-                        <option value="category2">Category 2</option>
-                        <option value="category3">Category 3</option>
-                        <option value="category4">Category 4</option>
+                        {categories.map(category => (
+                            <option key={category._id} value={category.name}>
+                                {category.name} {/* Ensure your category object has a 'name' field */}
+                            </option>
+                        ))}
                     </select>
                 </div>
             </div>
