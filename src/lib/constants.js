@@ -8,6 +8,7 @@ export const UPDATE_PROFILE_ROUTE = `${RESELLER_ROUTES}/update-reseller`;
 export const ADD_PROFILE_IMAGE_ROUTE = `${RESELLER_ROUTES}/add-profile-image`;
 export const REMOVE_PROFILE_IMAGE_ROUTE = `${RESELLER_ROUTES}/remove-profile-image`;
 export const LOGOUT_ROUTE = `${RESELLER_ROUTES}/logout`;
+export const GET_ALL_RESELLER_ROUTES = `${RESELLER_ROUTES}/get-resellers`;
 
 export const SUPPLIER_ROUTES = 'suppliers';
 export const SUPPLIER_SIGNUP_ROUTE = `${SUPPLIER_ROUTES}/signup`;
@@ -37,6 +38,7 @@ export const GET_ALL_PRODUCTS = `${PRODUCT_ROUTES}/get-products`;
 export const GET_ALL_PRODUCTS_BY_SUPPLIER_ROUTE = `${PRODUCT_ROUTES}/get-products-supplier`;
 
 export const AD_ROUTES = 'ads';
+export const GET_ALL_ADS = `${AD_ROUTES}/get-ads`;
 // export const CREATE_CHANNEL_ROUTE = `${CHANNEL_ROUTES}/create-channel`
 // export const GET_USER_CHANNELS_ROUTE = `${CHANNEL_ROUTES}/get-user-channels`;
 // export const GET_CHANNELS_MESSAGES_ROUTE = `${CHANNEL_ROUTES}/get-channel-messages`;

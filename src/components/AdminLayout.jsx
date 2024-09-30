@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import Sidebar from './SupplierSidebar';
-import Navbar from './SupplierNavbar';
+import AdminSidebar from './AdminSidebar';
+import AdminNavbar from './AdminNavbar';
 
 const AdminLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -12,11 +12,11 @@ const AdminLayout = ({ children }) => {
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <Sidebar isOpen={isSidebarOpen} />
+      <AdminSidebar isOpen={isSidebarOpen} />
 
       {/* Main Content */}
       <div className={`flex flex-col flex-grow transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-16'}`}>
-        <Navbar toggleSidebar={toggleSidebar} isOpen={isSidebarOpen} />
+        <AdminNavbar toggleSidebar={toggleSidebar} isOpen={isSidebarOpen} />
         
         <main className="flex-grow p-4 bg-gray-100">
           {children}

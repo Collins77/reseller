@@ -32,11 +32,21 @@ import { GET_RESELLER_INFO, GET_SUPPLIER_INFO } from './lib/constants'
 import BrandResults from './pages/BrandResults'
 import CategoryResults from './pages/CategoryResults'
 import SearchResults from './pages/SearchResults'
+import AdminDashboard from './pages/Admin/AdminDashboard'
+import AdminProducts from './pages/Admin/AdminProducts'
+import AdminResellers from './pages/Admin/AdminResellers'
+import AdminSuppliers from './pages/Admin/AdminSuppliers'
+import AdminAds from './pages/Admin/AdminAds'
 
 const PrivateRoute = ({children})=> {
   const {resellerInfo} = useAppStore();
   const isAuthenticated = !!resellerInfo;
   return isAuthenticated ? children : <Navigate to="/login" />;
+}
+const AdminRoute = ({children})=> {
+  const {adminInfo} = useAppStore();
+  const isAuthenticated = !!adminInfo;
+  return isAuthenticated ? children : <Navigate to="/admin/login" />;
 }
 
 const SupplierRoute = ({children})=> {
@@ -182,6 +192,7 @@ function App() {
               <EditPassword />
             </PrivateRoute>
           } />
+
         {/* </Route> */}
         <Route path='/supplier' element={
           <SupplierRoute>
@@ -227,6 +238,32 @@ function App() {
           <SupplierRoute>
             <EditPasswordSupp />
           </SupplierRoute>
+        } />
+
+        <Route path='/admin' element={
+          // <AdminRoute>
+            <AdminDashboard />
+          // </AdminRoute>
+        } />
+        <Route path='/admin/products' element={
+          // <AdminRoute>
+            <AdminProducts />
+          // </AdminRoute>
+        } />
+        <Route path='/admin/resellers' element={
+          // <AdminRoute>
+            <AdminResellers />
+          // </AdminRoute>
+        } />
+        <Route path='/admin/suppliers' element={
+          // <AdminRoute>
+            <AdminSuppliers />
+          // </AdminRoute>
+        } />
+        <Route path='/admin/ads' element={
+          // <AdminRoute>
+            <AdminAds />
+          // </AdminRoute>
         } />
       </Routes>
     </BrowserRouter>
