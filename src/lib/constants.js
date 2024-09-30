@@ -10,6 +10,12 @@ export const REMOVE_PROFILE_IMAGE_ROUTE = `${RESELLER_ROUTES}/remove-profile-ima
 export const LOGOUT_ROUTE = `${RESELLER_ROUTES}/logout`;
 export const GET_ALL_RESELLER_ROUTES = `${RESELLER_ROUTES}/get-resellers`;
 
+export const ADMIN_ROUTES = "admins";
+export const GET_ALL_ADMINS = `${ADMIN_ROUTES}/get-admins`
+export const GET_ADMIN_INFO = `${ADMIN_ROUTES}/admin-info`;
+export const ADMIN_LOGIN = `${ADMIN_ROUTES}/login`;
+export const ADMIN_LOGOUT_ROUTE = `${ADMIN_ROUTES}/logout`;
+
 export const SUPPLIER_ROUTES = 'suppliers';
 export const SUPPLIER_SIGNUP_ROUTE = `${SUPPLIER_ROUTES}/signup`;
 export const SUPPLIER_LOGIN_ROUTE = `${SUPPLIER_ROUTES}/login`;

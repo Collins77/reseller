@@ -2,11 +2,54 @@
 
 import AdminLayout from "@/components/AdminLayout"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import apiClient from "@/lib/api-client"
+import { GET_ALL_ADS, GET_ALL_PRODUCTS, GET_ALL_RESELLER_ROUTES, GET_ALL_SUPPLIER_ROUTES } from "@/lib/constants"
+import { useAppStore } from "@/redux/store"
+import { useEffect, useState } from "react"
 import { AiOutlineProduct } from "react-icons/ai"
 import { FaDollarSign } from "react-icons/fa"
 import { MdOutlineDiscount } from "react-icons/md"
 
 const AdminDashboard = () => {
+  const { adminInfo } = useAppStore();
+  const [products, setProducts] = useState([]);
+  const [ads, setAds] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
+  const [resellers, setResellers] = useState([]);
+  const [unapprovedSuppliers, setUnapprovedSuppliers] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const res = await apiClient.get(GET_ALL_PRODUCTS, {}, { withCredentials: true });
+      setProducts(res.data);
+    };
+
+    const fetchSuppliers = async () => {
+      const res = await apiClient.get(GET_ALL_SUPPLIER_ROUTES, {}, { withCredentials: true });
+      setSuppliers(res.data.suppliers);
+
+      const unapproved = res.data.suppliers.filter(supplier => supplier.status === 'Not Approved');
+      setUnapprovedSuppliers(unapproved);
+    };
+    const fetchAds = async () => {
+      const res = await apiClient.get(GET_ALL_ADS, {}, { withCredentials: true });
+      setAds(res.data);
+    };
+    const fetchResellers = async () => {
+      try {
+        const res = await apiClient.get(`${GET_ALL_RESELLER_ROUTES}`);
+        const data = res.data;
+        setResellers(data)
+      } catch (error) {
+        console.error("Error fetching products", error);
+      }
+    };
+    fetchProducts();
+    fetchSuppliers();
+    fetchAds();
+    fetchResellers()
+  }, []);
+
   return (
     <AdminLayout>
       <div>
@@ -28,7 +71,7 @@ const AdminDashboard = () => {
         <div className="bg-white shadow-md p-4">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-xl font-bold">Welcome Back, Admin</h1>
+              <h1 className="text-xl font-bold">Welcome Back, {adminInfo.username}</h1>
               <p className="text-sm text-gray-500">Your current status and analytics are here</p>
             </div>
             <div className="px-2 py-1 border border-orange-500 rounded-md">
@@ -41,7 +84,7 @@ const AdminDashboard = () => {
                 <h1 className="text-orange-500 font-bold">Total Resellers</h1>
               </div>
               <div className="flex justify-between">
-                <h1 className="text-xl font-bold">24</h1>
+                <h1 className="text-xl font-bold">{resellers?.length || 0}</h1>
                 <FaDollarSign className="text-xl text-green-300" />
               </div>
               <div>
@@ -53,7 +96,7 @@ const AdminDashboard = () => {
                 <h1 className="text-orange-500 font-bold">Total Suppliers</h1>
               </div>
               <div className="flex justify-between">
-                <h1 className="text-xl font-bold">24</h1>
+                <h1 className="text-xl font-bold">{suppliers?.length || 0}</h1>
                 <FaDollarSign className="text-xl text-green-300" />
               </div>
               <div>
@@ -65,7 +108,7 @@ const AdminDashboard = () => {
                 <h1 className="text-orange-500 font-bold">Total Products</h1>
               </div>
               <div className="flex justify-between">
-                <h1 className="text-xl font-bold">10</h1>
+                <h1 className="text-xl font-bold">{products?.length || 0}</h1>
                 <AiOutlineProduct className="text-xl text-red-300" />
               </div>
               <div>
@@ -77,7 +120,7 @@ const AdminDashboard = () => {
                 <h1 className="text-orange-500 font-bold">Ads & Events</h1>
               </div>
               <div className="flex justify-between">
-                <h1 className="text-xl font-bold">12</h1>
+                <h1 className="text-xl font-bold">{ads?.length || 0}</h1>
                 <MdOutlineDiscount className="text-xl text-blue-300" />
               </div>
               <div>
@@ -92,36 +135,26 @@ const AdminDashboard = () => {
             </div>
             <div>
               <table className="bg-white w-full h-[300px] overflow-scroll">
-
-                <tr className="border-b border-gray-500">
-                  <th className="py-2 px-4">SKU</th>
-                  <th className="py-2 mx-auto">NAME</th>
-                  <th className="py-2 px-4">PRICE</th>
-                  <th className="py-2 px-4">BRAND</th>
-                  <th className="py-2 px-4">WARRANTY(MONS)</th>
-                  <th className="py-2 px-4">STATUS</th>
-                </tr>
-                {/* {recentProducts.map(product => (
-                  <tr key={product._id} className="border-b border-gray-500">
-                    <td className="py-6 px-4 flex items-center">{product.sku}</td>
-                    <td className="w-[500px]">
-                      <h1 className="font-semibold">{product.name}</h1>
-                      <p className="text-gray-400">{product.category}</p>
-                    </td>
-                    <td className="px-4">
-                      ${product.price}
-                    </td>
-                    <td className="px-4">
-                      {product.brand}
-                    </td>
-                    <td className="px-4 text-center">
-                      {product.warranty}
-                    </td>
-                    <td className="px-4">
-                      {product.status}
-                    </td>
+                <thead>
+                  <tr className="border-b border-gray-500">
+                    <th className="py-2 px-4">Company Name</th>
+                    <th className="py-2 mx-auto">Country</th>
+                    <th className="py-2 px-4">Contact</th>
+                    <th className="py-2 px-4">Email</th>
+                    <th className="py-2 px-4">Status</th>
                   </tr>
-                ))} */}
+                </thead>
+                <tbody>
+                  {unapprovedSuppliers.map((supplier) => (
+                    <tr key={supplier._id} className="border-b border-gray-500">
+                      <td className="py-2 px-4">{supplier.companyName}</td>
+                      <td className="py-2 px-4">{supplier.country}</td>
+                      <td className="py-2 px-4">{supplier.contact}</td>
+                      <td className="py-2 px-4">{supplier.companyEmail}</td>
+                      <td className="py-2 px-4">{supplier.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
               </table>
             </div>
           </div>

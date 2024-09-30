@@ -1,7 +1,7 @@
 // import React from 'react'
 
 import apiClient from "@/lib/api-client";
-import { SUPPLIER_LOGOUT_ROUTE } from "@/lib/constants";
+import { ADMIN_LOGOUT_ROUTE } from "@/lib/constants";
 import { useAppStore } from "@/redux/store";
 import { useEffect, useState } from "react";
 import { MdMarkUnreadChatAlt } from "react-icons/md";
@@ -11,11 +11,11 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const AdminNavbar = ({isOpen, toggleSidebar}) => {
+    const {adminInfo, setAdminInfo} = useAppStore();
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const { supplierInfo, setSupplierInfo } = useAppStore();
     const navigate = useNavigate();
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
+    const [username, setUsername] = useState("");
+
 
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen);
@@ -23,12 +23,12 @@ const AdminNavbar = ({isOpen, toggleSidebar}) => {
 
     const logOut = async () => {
         try {
-            const response = await apiClient.post(SUPPLIER_LOGOUT_ROUTE, {}, { withCredentials: true });
+            const response = await apiClient.post(ADMIN_LOGOUT_ROUTE, {}, { withCredentials: true });
             if (response.status === 200) {
                 toast.success("Logout successful")
                 setDropdownOpen(false);
-                navigate("/supplier-login");
-                setSupplierInfo(null);
+                navigate("/admin/login");
+                setAdminInfo(null);
             }
         } catch (error) {
             console.log(error);
@@ -36,11 +36,10 @@ const AdminNavbar = ({isOpen, toggleSidebar}) => {
     }
 
     useEffect(() => {
-        if(supplierInfo) {
-          setFirstName(supplierInfo.firstName);
-          setLastName(supplierInfo.lastName);
+        if(adminInfo) {
+          setUsername(adminInfo.username);
         }
-      }, [supplierInfo]);
+      }, [adminInfo]);
 
   return (
     <header className="bg-white shadow-md px-4 py-2 sticky top-0 flex items-center justify-between">
@@ -63,9 +62,7 @@ const AdminNavbar = ({isOpen, toggleSidebar}) => {
                         <h1 className="text-white uppercase">
                             {/* {reseller ? `${reseller.firstName.charAt(0)}${reseller.lastName.charAt(0)}` : "NN"} */}
                             <h1 className="text-white uppercase">
-                            {firstName?.charAt(0) && lastName?.charAt(0)
-                                ? `${firstName.charAt(0)}${lastName.charAt(0)}`
-                                : "NN"}
+                            {username?.charAt(0)}
                         </h1>
                         </h1>
                     </div>
@@ -75,7 +72,7 @@ const AdminNavbar = ({isOpen, toggleSidebar}) => {
                         <div className="absolute z-10 right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
                             <ul className="py-2">
                                 <li>
-                                    <a href="/supplier/account" className="block px-4 py-2 hover:bg-gray-100">
+                                    <a href="/admin/account" className="block px-4 py-2 hover:bg-gray-100">
                                         Account
                                     </a>
                                 </li>

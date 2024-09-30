@@ -28,7 +28,7 @@ import EditPasswordSupp from './pages/Supplier/EditPasswordSupp'
 import { useAppStore } from './redux/store'
 import { useEffect, useState } from 'react'
 import apiClient from './lib/api-client'
-import { GET_RESELLER_INFO, GET_SUPPLIER_INFO } from './lib/constants'
+import { GET_ADMIN_INFO, GET_RESELLER_INFO, GET_SUPPLIER_INFO } from './lib/constants'
 import BrandResults from './pages/BrandResults'
 import CategoryResults from './pages/CategoryResults'
 import SearchResults from './pages/SearchResults'
@@ -37,6 +37,9 @@ import AdminProducts from './pages/Admin/AdminProducts'
 import AdminResellers from './pages/Admin/AdminResellers'
 import AdminSuppliers from './pages/Admin/AdminSuppliers'
 import AdminAds from './pages/Admin/AdminAds'
+import Admins from './pages/Admin/Admins'
+import AdminLogin from './pages/Auth/AdminLogin'
+import AddAdmin from './pages/Admin/AddAdmin'
 
 const PrivateRoute = ({children})=> {
   const {resellerInfo} = useAppStore();
@@ -67,10 +70,17 @@ const SupplierAuthRoute = ({children})=> {
   return isAuthenticated ? <Navigate to="/supplier" /> : children;
 }
 
+const AdminAuthRoute = ({children})=> {
+  const {adminInfo} = useAppStore();
+  const isAuthenticated = !!adminInfo;
+  return isAuthenticated ? <Navigate to="/admin" /> : children;
+}
+
 
 function App() {
   const {resellerInfo, setResellerInfo} = useAppStore();
   const {supplierInfo, setSupplierInfo} = useAppStore();
+  const {adminInfo, setAdminInfo} = useAppStore();
   const [loading, setLoading] = useState(true);
 
   useEffect(()=> {
@@ -116,7 +126,28 @@ function App() {
     } else {
       setLoading(false)
     }
-  }, [resellerInfo, setResellerInfo, supplierInfo, setSupplierInfo])
+    const getAdminData = async () => {
+      try {
+        const response = await apiClient.get(GET_ADMIN_INFO, {withCredentials: true,});
+        if(response.status === 200 && response.data.id) {
+          setAdminInfo(response.data);
+        } else {
+          setAdminInfo(undefined);
+        }
+        console.log({response});
+      } catch (err) {
+        console.error(err);
+        setAdminInfo(undefined);
+      } finally {
+        setLoading(false);
+      }
+    }
+    if(!adminInfo) {
+      getAdminData()
+    } else {
+      setLoading(false)
+    }
+  }, [resellerInfo, setResellerInfo, supplierInfo, setSupplierInfo, adminInfo, setAdminInfo])
 
   if(loading) {
     return <div>Loading....</div>
@@ -240,30 +271,45 @@ function App() {
           </SupplierRoute>
         } />
 
+        <Route path='/admin/login' element={
+          <AdminAuthRoute>
+            <AdminLogin />
+          </AdminAuthRoute>
+        } />
         <Route path='/admin' element={
-          // <AdminRoute>
+          <AdminRoute>
             <AdminDashboard />
-          // </AdminRoute>
+          </AdminRoute>
         } />
         <Route path='/admin/products' element={
-          // <AdminRoute>
+          <AdminRoute>
             <AdminProducts />
-          // </AdminRoute>
+          </AdminRoute>
         } />
         <Route path='/admin/resellers' element={
-          // <AdminRoute>
+          <AdminRoute>
             <AdminResellers />
-          // </AdminRoute>
+          </AdminRoute>
         } />
         <Route path='/admin/suppliers' element={
-          // <AdminRoute>
+          <AdminRoute>
             <AdminSuppliers />
-          // </AdminRoute>
+          </AdminRoute>
         } />
         <Route path='/admin/ads' element={
-          // <AdminRoute>
+          <AdminRoute>
             <AdminAds />
-          // </AdminRoute>
+          </AdminRoute>
+        } />
+        <Route path='/admin/admins' element={
+          <AdminRoute>
+            <Admins />
+          </AdminRoute>
+        } />
+        <Route path='/admin/add-admin' element={
+          <AdminRoute>
+            <AddAdmin />
+          </AdminRoute>
         } />
       </Routes>
     </BrowserRouter>
