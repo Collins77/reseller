@@ -86,7 +86,7 @@ const AdminResellers = () => {
                             />
                         </div>
                         <div>
-                            <a href="/admin/add-reseller" className="bg-orange-500 px-2 py-1 text-white rounded-md hover:bg-orange-800">Enroll Reseller</a>
+                            <a href="/admin/create-reseller" className="bg-orange-500 px-2 py-1 text-white rounded-md hover:bg-orange-800">Enroll Reseller</a>
                         </div>
                     </div>
                     <div>

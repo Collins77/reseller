@@ -71,11 +71,11 @@ const AddAdmin = () => {
                         <Breadcrumb>
                             <BreadcrumbList>
                                 <BreadcrumbItem>
-                                    <BreadcrumbLink href="/supplier">Home</BreadcrumbLink>
+                                    <BreadcrumbLink href="/admin">Home</BreadcrumbLink>
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem>
-                                    <BreadcrumbPage>Create-Ad</BreadcrumbPage>
+                                    <BreadcrumbPage>Create-Admin</BreadcrumbPage>
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>

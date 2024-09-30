@@ -17,7 +17,7 @@ const Account = () => {
     const [productsBySupplier, setProductsBySupplier] = useState({});
     const [adsBySupplier, setAdsBySupplier] = useState({});
     const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchSupplierDetails = async () => {

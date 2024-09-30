@@ -40,6 +40,8 @@ import AdminAds from './pages/Admin/AdminAds'
 import Admins from './pages/Admin/Admins'
 import AdminLogin from './pages/Auth/AdminLogin'
 import AddAdmin from './pages/Admin/AddAdmin'
+import AdminAddReseller from './pages/Admin/AdminAddReseller'
+import AdminAddSupplier from './pages/Admin/AdminAddSupplier'
 
 const PrivateRoute = ({children})=> {
   const {resellerInfo} = useAppStore();
@@ -309,6 +311,16 @@ function App() {
         <Route path='/admin/add-admin' element={
           <AdminRoute>
             <AddAdmin />
+          </AdminRoute>
+        } />
+        <Route path='/admin/create-reseller' element={
+          <AdminRoute>
+            <AdminAddReseller />
+          </AdminRoute>
+        } />
+        <Route path='/admin/create-supplier' element={
+          <AdminRoute>
+            <AdminAddSupplier />
           </AdminRoute>
         } />
       </Routes>

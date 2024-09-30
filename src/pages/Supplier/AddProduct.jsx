@@ -29,8 +29,6 @@ const AddProduct = () => {
 
 
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
     const [categories, setCategories] = useState([]);
     const [brands, setBrands] = useState([]);
 
@@ -63,16 +61,12 @@ const AddProduct = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setError("");
-        setSuccess("");
 
         try {
             const supplierId = `${supplierInfo.id}`; // Ensure supplier ID is coming from state/context
             const productData = { ...formData, supplierId };
 
             await createNewProduct(productData);
-
-            setSuccess("Product created successfully");
             setLoading(false);
             toast.success("Product created successfully!"); // Toast notification for success
 
@@ -90,7 +84,6 @@ const AddProduct = () => {
             });
         } catch (error) {
             setLoading(false);
-            setError("Error creating product: " + error.message);
             toast.error("Error creating product: " + error.message); // Toast notification for error
         }
     };

@@ -31,8 +31,6 @@ const AddAd = () => {
 
 
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -45,16 +43,12 @@ const AddAd = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setError("");
-        setSuccess("");
 
         try {
             const supplierId = `${supplierInfo.id}`; // Ensure supplier ID is coming from state/context
             const adData = { ...formData, supplierId };
 
             await createNewAd(adData);
-
-            setSuccess("Ad created successfully");
             setLoading(false);
             toast.success("Ad created successfully!"); // Toast notification for success
 
@@ -73,7 +67,6 @@ const AddAd = () => {
             });
         } catch (error) {
             setLoading(false);
-            setError("Error creating product: " + error.message);
             toast.error("Error creating product: " + error.message); // Toast notification for error
         }
     };
