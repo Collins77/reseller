@@ -127,7 +127,7 @@ const AppNavbar = () => {
             </div>
             <div className="flex gap-4 items-center">
                 {/* <a href="signup" className='bg-orange-500 px-2 py-1 rounded-xl text-white'>Access Forum</a> */}
-                <a href="/forum">
+                <a href="/app/chat">
                     <MdMarkUnreadChatAlt className="text-orange-500 text-2xl" />
                 </a>
                 <div className="relative">

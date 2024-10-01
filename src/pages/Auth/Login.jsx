@@ -45,7 +45,9 @@ const Login = () => {
             }
         } else {
             setLoading(false)
-        }
+        } 
+        setLoading(false)
+        
     }
 
     return (

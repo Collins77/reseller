@@ -44,6 +44,7 @@ import AdminAddReseller from './pages/Admin/AdminAddReseller'
 import AdminAddSupplier from './pages/Admin/AdminAddSupplier'
 import AdminAddProduct from './pages/Admin/AdminAddProduct'
 import AdminCreateAd from './pages/Admin/AdminCreateAd'
+import Chat from './pages/chat'
 
 const PrivateRoute = ({children})=> {
   const {resellerInfo} = useAppStore();
@@ -185,6 +186,11 @@ function App() {
           <Route path="/app" element={
             <PrivateRoute> 
               <MainApp />
+            </PrivateRoute>
+          } />
+          <Route path="/app/chat" element={
+            <PrivateRoute> 
+              <Chat />
             </PrivateRoute>
           } />
           <Route path="/app/suppliers" element={
