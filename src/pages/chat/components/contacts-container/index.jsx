@@ -4,7 +4,7 @@ import ProfileInfo from "./components/profile.info";
 import apiClient from "@/lib/api-client";
 import ContactList from "@/components/contact-list";
 import CreateChannel from "./components/create-channel";
-import logo from '../../../../assets/ResellerSprint logo.png'
+import logo from '../../../../assets/ResellerSprint icon.png'
 import { GET_DM_CONTACTS_ROUTES, GET_USER_CHANNELS_ROUTE } from "@/lib/constants";
 import { useAppStore } from "@/redux/store";
 
