@@ -46,7 +46,11 @@ const AdminAddReseller = () => {
                 toast.error("Something went wrong.")
             }
         } catch (error) {
-            toast.error(error.message)
+            if (error.response && error.response.data && error.response.data.message) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error(error.message || "An error occurred.");
+            }
         } finally {
             setLoading(false);
         }
@@ -85,7 +89,7 @@ const AdminAddReseller = () => {
                 </div>
                 <div className="bg-white shadow-md p-4">
                     <div className="pb-4 border-b border-dashed mb-8">
-                        <h1 className="text-xl font-bold">Create New Product</h1>
+                        <h1 className="text-xl font-bold">Create New Reseller</h1>
                     </div>
                     <div className="p-5">
                         <form onSubmit={handleSubmit} className="w-full">

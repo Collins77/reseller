@@ -125,7 +125,7 @@ const AdminAddSupplier = () => {
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem>
-                                    <BreadcrumbPage>Create-Reseller</BreadcrumbPage>
+                                    <BreadcrumbPage>Create-Supplier</BreadcrumbPage>
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
@@ -133,7 +133,7 @@ const AdminAddSupplier = () => {
                 </div>
                 <div className="bg-white shadow-md p-4">
                     <div className="pb-4 border-b border-dashed mb-8">
-                        <h1 className="text-xl font-bold">Create New Product</h1>
+                        <h1 className="text-xl font-bold">Create New Supplier</h1>
                     </div>
                     <div className="p-5">
                         <form onSubmit={handleSubmit} className="w-full">
@@ -141,7 +141,7 @@ const AdminAddSupplier = () => {
                             <div className="flex gap-4 w-full mb-5 pb-4 border-b border-dashed">
                                 <div className="w-[40%]">
 
-                                    <p className="text-gray-500">Add reseller information and create a new reseller</p>
+                                    <p className="text-gray-500">Add supplier information and create a new supplier</p>
                                 </div>
                                 <div className="w-[60%]">
                                     <div className="flex flex-col gap-3 mb-4">
@@ -165,7 +165,7 @@ const AdminAddSupplier = () => {
                             <h1 className="font-bold mb-3">Company Information</h1>
                             <div className="flex gap-4 w-full mb-5 pb-4 border-b border-dashed">
                                 <div className="w-[40%]">
-                                    <p className="text-gray-500">Add reseller company information</p>
+                                    <p className="text-gray-500">Add supplier company information</p>
 
                                 </div>
                                 <div className="w-[60%]">
